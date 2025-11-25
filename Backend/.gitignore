@@ -1,0 +1,10 @@
+# Modelos de whisper
+whisper/
+models/
+*.pt
+*.bin
+
+# Entornos & caches
+venv/
+__pycache__/
+downloads/
