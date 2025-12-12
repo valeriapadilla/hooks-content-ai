@@ -7,14 +7,14 @@ from typing import Optional
 class VideoDownloader:
     """Servicio responsable de descargar videos desde URLs."""
     
-    def __init__(self, download_dir: str = "downloads"):
+    def __init__(self, download_dir: Optional[str] = None):
         """
         Inicializa el descargador de videos.
         
         Args:
-            download_dir: Directorio donde se guardarán los videos descargados
+            download_dir: Directorio donde se guardarán los videos descargados (opcional, usa env var)
         """
-        self.download_dir = download_dir
+        self.download_dir = download_dir or os.getenv("DOWNLOAD_DIR", "downloads")
         self._ensure_download_dir()
     
     def _ensure_download_dir(self):

@@ -8,21 +8,27 @@ class TranscriptionService:
     
     def __init__(
         self,
-        whisper_cli_path: str = "./whisper.cpp/build/bin/whisper-cli",
-        model_path: str = "./whisper.cpp/models/ggml-base.bin",
-        language: str = "es"
+        whisper_cli_path: Optional[str] = None,
+        model_path: Optional[str] = None,
+        language: Optional[str] = None
     ):
         """
         Inicializa el servicio de transcripción.
         
         Args:
-            whisper_cli_path: Ruta al ejecutable de whisper-cli
-            model_path: Ruta al modelo de Whisper
-            language: Idioma para la transcripción
+            whisper_cli_path: Ruta al ejecutable de whisper-cli (opcional, usa env var)
+            model_path: Ruta al modelo de Whisper (opcional, usa env var)
+            language: Idioma para la transcripción (opcional, usa env var)
         """
-        self.whisper_cli_path = whisper_cli_path
-        self.model_path = model_path
-        self.language = language
+        self.whisper_cli_path = whisper_cli_path or os.getenv(
+            "WHISPER_CLI_PATH", 
+            "./whisper.cpp/build/bin/whisper-cli"
+        )
+        self.model_path = model_path or os.getenv(
+            "WHISPER_MODEL_PATH",
+            "./whisper.cpp/models/ggml-base.bin"
+        )
+        self.language = language or os.getenv("WHISPER_LANGUAGE", "es")
     
     def extract_audio(self, video_path: str) -> str:
         """
