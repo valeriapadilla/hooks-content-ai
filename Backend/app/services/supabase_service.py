@@ -10,9 +10,14 @@ class SupabaseService:
     def __init__(self):
         """Inicializa el cliente de Supabase."""
         settings.validate()
+        supabase_key = settings.SUPABASE_SERVICE_KEY or settings.SUPABASE_KEY
+        
+        if not supabase_key:
+            raise ValueError("SUPABASE_KEY o SUPABASE_SERVICE_KEY debe estar configurado")
+        
         self.client: Client = create_client(
             settings.SUPABASE_URL,
-            settings.SUPABASE_KEY
+            supabase_key
         )
     
     def save_video_analysis(

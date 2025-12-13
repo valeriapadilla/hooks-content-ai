@@ -157,6 +157,22 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+-- Función para crear perfil automáticamente cuando se crea un usuario
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO public.user_profiles (id)
+    VALUES (NEW.id);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger para crear perfil automáticamente al crear usuario
+CREATE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW
+    EXECUTE FUNCTION public.handle_new_user();
+
 -- Triggers para actualizar updated_at
 CREATE TRIGGER update_video_analyses_updated_at
     BEFORE UPDATE ON video_analyses
