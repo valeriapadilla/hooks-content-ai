@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import FeatureTag from './home/FeatureTag'
 import HeroTitle from './home/HeroTitle'
 import HeroCTA from './home/HeroCTA'
@@ -7,7 +8,9 @@ interface HomeSectionProps {
   scrollToSection?: (sectionId: string) => void
 }
 
-const HomeSection = ({}: HomeSectionProps) => {
+const HomeSection = ({ scrollToSection }: HomeSectionProps) => {
+  const navigate = useNavigate()
+  
   return (
     <section id="home" className="flex items-center justify-center min-h-screen pt-24 pb-16 px-8 text-center">
       <div className="container">
@@ -30,10 +33,7 @@ const HomeSection = ({}: HomeSectionProps) => {
           />
           <HeroCTA
             label="Empezar ahora"
-            onClick={() => {
-              // TODO: Implementar lógica de sign up
-              console.log('Sign up clicked')
-            }}
+            onClick={() => navigate('/signup')}
           />
         </motion.div>
       </div>

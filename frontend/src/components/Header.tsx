@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Logo from './ui/Logo'
 import Navigation from './navigation/Navigation'
 import { NAVIGATION_ITEMS } from '../constants/navigation'
@@ -10,6 +11,7 @@ interface HeaderProps {
 }
 
 const Header = ({ activeSection, onNavigate }: HeaderProps) => {
+  const navigate = useNavigate()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleNavigate = (section: string) => {
@@ -38,10 +40,7 @@ const Header = ({ activeSection, onNavigate }: HeaderProps) => {
             items={NAVIGATION_ITEMS}
           />
           <button
-            onClick={() => {
-              // TODO: Implementar lógica de login
-              console.log('Login clicked')
-            }}
+            onClick={() => navigate('/login')}
             className="px-[13px] py-[9px] text-sm rounded-lg font-normal text-[#0A0A0A] bg-[#FFCE45] hover:bg-[#E6B83D] transition-colors duration-200 border-none cursor-pointer font-medium"
           >
             Iniciar sesión
@@ -113,8 +112,7 @@ const Header = ({ activeSection, onNavigate }: HeaderProps) => {
                 <button
                   onClick={() => {
                     setIsMobileMenuOpen(false)
-                    // TODO: Implementar lógica de login
-                    console.log('Login clicked')
+                    navigate('/login')
                   }}
                   type="button"
                   className="w-full px-[13px] py-[9px] text-sm rounded-lg font-normal text-white bg-[#814AC8] hover:bg-[#6d3db0] transition-colors duration-200 border-none cursor-pointer mt-2"
