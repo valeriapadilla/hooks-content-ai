@@ -1,30 +1,29 @@
-import { useState, FormEvent } from 'react'
+import { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import StarryBackground from '../components/StarryBackground'
 import AuthForm from '../components/auth/AuthForm'
 import Logo from '../components/ui/Logo'
+import { useAuth } from '../hooks/useAuth'
 
 const LoginPage = () => {
   const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false)
+  const { signIn, isLoading, error } = useAuth()
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setIsLoading(true)
 
     const formData = new FormData(e.currentTarget)
     const email = formData.get('email') as string
     const password = formData.get('password') as string
 
-    // TODO: Implementar lógica de login con Supabase
-    console.log('Login:', { email, password })
-
-    // Simulación de login
-    setTimeout(() => {
-      setIsLoading(false)
-      // TODO: Redirigir al dashboard después de login exitoso
-      // navigate('/dashboard')
-    }, 1000)
+    try {
+      await signIn({ email, password })
+      // Redirigir al dashboard después de login exitoso
+      navigate('/dashboard')
+    } catch (err) {
+      // El error ya está manejado por useAuth
+      console.error('Error al iniciar sesión:', err)
+    }
   }
 
   return (
@@ -65,6 +64,7 @@ const LoginPage = () => {
           linkTo="/signup"
           linkLabel="Crear cuenta"
           isLoading={isLoading}
+          error={error}
         />
       </div>
     </div>

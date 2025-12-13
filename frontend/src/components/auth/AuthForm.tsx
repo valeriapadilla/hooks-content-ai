@@ -18,6 +18,7 @@ interface AuthFormProps {
   linkTo?: string
   linkLabel?: string
   isLoading?: boolean
+  error?: string | null
 }
 
 const AuthForm = ({
@@ -29,7 +30,8 @@ const AuthForm = ({
   linkText,
   linkTo,
   linkLabel,
-  isLoading = false
+  isLoading = false,
+  error = null
 }: AuthFormProps) => {
   return (
     <motion.div
@@ -70,6 +72,12 @@ const AuthForm = ({
               disabled={isLoading}
             />
           ))}
+
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3">
+              <p className="text-red-400 text-sm">{error}</p>
+            </div>
+          )}
 
           <button
             type="submit"

@@ -1,31 +1,30 @@
-import { useState, FormEvent } from 'react'
+import { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import StarryBackground from '../components/StarryBackground'
 import AuthForm from '../components/auth/AuthForm'
 import Logo from '../components/ui/Logo'
+import { useAuth } from '../hooks/useAuth'
 
 const SignupPage = () => {
   const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false)
+  const { signUp, isLoading, error } = useAuth()
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setIsLoading(true)
 
     const formData = new FormData(e.currentTarget)
     const name = formData.get('name') as string
     const email = formData.get('email') as string
     const password = formData.get('password') as string
 
-    // TODO: Implementar lógica de registro con Supabase
-    console.log('Signup:', { name, email, password })
-
-    // Simulación de registro
-    setTimeout(() => {
-      setIsLoading(false)
-      // TODO: Redirigir al dashboard después de registro exitoso
-      // navigate('/dashboard')
-    }, 1000)
+    try {
+      await signUp({ email, password, full_name: name })
+      // Redirigir al dashboard después de registro exitoso
+      navigate('/dashboard')
+    } catch (err) {
+      // El error ya está manejado por useAuth
+      console.error('Error al registrar usuario:', err)
+    }
   }
 
   return (
@@ -73,6 +72,7 @@ const SignupPage = () => {
           linkTo="/login"
           linkLabel="Iniciar sesión"
           isLoading={isLoading}
+          error={error}
         />
       </div>
     </div>

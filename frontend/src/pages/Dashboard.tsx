@@ -5,13 +5,15 @@ import DashboardTopBar from '../components/dashboard/DashboardTopBar'
 import DashboardView from '../components/dashboard/DashboardView'
 import AnalyzeVideoView from '../components/dashboard/AnalyzeVideoView'
 import StarryBackground from '../components/StarryBackground'
+import { useAuth } from '../hooks/useAuth'
 
 const Dashboard = () => {
   const [activeView, setActiveView] = useState<'analizar' | 'hooks' | 'perfil' | 'historial'>('analizar')
   const navigate = useNavigate()
+  const { signOut } = useAuth()
 
   const handleLogout = () => {
-    // TODO: Implementar lógica de logout
+    signOut()
     navigate('/')
   }
 
