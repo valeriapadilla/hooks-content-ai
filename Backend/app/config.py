@@ -4,6 +4,10 @@ Carga variables de entorno y proporciona configuración centralizada.
 """
 import os
 from typing import Optional
+from dotenv import load_dotenv
+
+# Cargar variables de entorno desde .env
+load_dotenv()
 
 
 class Settings:
@@ -32,6 +36,10 @@ class Settings:
     # Descargas
     DOWNLOAD_DIR: str = os.getenv("DOWNLOAD_DIR", "downloads")
     
+    # OpenAI
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+    OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+    
     @classmethod
     def validate(cls) -> bool:
         """
@@ -44,6 +52,8 @@ class Settings:
             raise ValueError("SUPABASE_URL no está configurado")
         if not cls.SUPABASE_KEY:
             raise ValueError("SUPABASE_KEY no está configurado")
+        if not cls.OPENAI_API_KEY:
+            raise ValueError("OPENAI_API_KEY no está configurado")
         return True
 
 
