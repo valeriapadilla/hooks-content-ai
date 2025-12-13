@@ -10,6 +10,7 @@ interface VideoAnalysisResultsProps {
   scriptBase?: string
   onSave?: () => void
   isSaving?: boolean
+  saveSuccess?: boolean
 }
 
 const VideoAnalysisResults = ({
@@ -18,6 +19,7 @@ const VideoAnalysisResults = ({
   scriptBase,
   onSave,
   isSaving = false,
+  saveSuccess = false,
 }: VideoAnalysisResultsProps) => {
   // Si no hay datos, mostrar estado vacío
   if (!transcript && !hook && !scriptBase) {
@@ -50,7 +52,7 @@ const VideoAnalysisResults = ({
       {/* Header con botón Guardar */}
       {(transcript || hook || scriptBase) && onSave && (
         <motion.div
-          className="flex justify-start mb-6"
+          className="flex flex-col gap-3 mb-6"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
@@ -58,7 +60,7 @@ const VideoAnalysisResults = ({
           <button
             onClick={onSave}
             disabled={isSaving}
-            className="px-6 py-3 text-sm rounded-lg font-medium text-[#0A0A0A] bg-[#FFCE45] hover:bg-[#E6B83D] transition-colors duration-200 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-6 py-3 text-sm rounded-lg font-medium text-[#0A0A0A] bg-[#FFCE45] hover:bg-[#E6B83D] transition-colors duration-200 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 w-fit"
           >
             {isSaving ? (
               <>
@@ -119,6 +121,33 @@ const VideoAnalysisResults = ({
               </>
             )}
           </button>
+          {saveSuccess && (
+            <motion.div
+              className="bg-green-500/10 border border-green-500/50 rounded-lg p-3 w-fit"
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+            >
+              <p className="text-green-400 text-sm flex items-center gap-2">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M20 6L9 17l-5-5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                Análisis guardado correctamente
+              </p>
+            </motion.div>
+          )}
         </motion.div>
       )}
 

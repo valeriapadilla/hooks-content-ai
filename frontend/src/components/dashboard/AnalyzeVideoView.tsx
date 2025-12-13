@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import { videoService } from '../../services/videoService'
 import { ApiClientError } from '../../services/apiClient'
+import { getUserId } from '../../utils/authStorage'
 import VideoUrlInput from './VideoUrlInput'
 import VideoAnalysisResults from './VideoAnalysisResults'
 import type { VideoAnalysisResponse } from '../../types/api'
@@ -11,6 +11,7 @@ const AnalyzeVideoView = () => {
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState(false)
+  const [videoUrl, setVideoUrl] = useState<string>('')
   const [analysisData, setAnalysisData] = useState<{
     transcript?: string
     hook?: {
@@ -25,12 +26,11 @@ const AnalyzeVideoView = () => {
     setIsLoading(true)
     setAnalysisData(null)
     setError(null)
+    setVideoUrl(url)
 
     try {
-      // Llamar al servicio de video (responsabilidad: videoService)
       const response: VideoAnalysisResponse = await videoService.analyzeVideo({ url })
 
-      // Mapear la respuesta del backend al formato del componente
       setAnalysisData({
         transcript: response.transcript,
         hook: {
@@ -57,21 +57,39 @@ const AnalyzeVideoView = () => {
   }
 
   const handleSave = async () => {
-    if (!analysisData) return
+    if (!analysisData || !videoUrl) return
+
+    const userId = getUserId()
+    if (!userId) {
+      setError('Debes iniciar sesión para guardar análisis')
+      return
+    }
 
     setIsSaving(true)
     setSaveSuccess(false)
     setError(null)
 
     try {
-      // TODO: Implementar llamada al backend para guardar
-      // Por ahora solo simulamos
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await videoService.saveVideoAnalysis({
+        user_id: userId,
+        video_url: videoUrl,
+        transcript: analysisData.transcript,
+        hook: analysisData.hook?.general || analysisData.hook?.used_in_video,
+        script_base: analysisData.scriptBase,
+      })
       
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 3000)
     } catch (err) {
-      setError('Error al guardar el análisis')
+      let errorMessage = 'Error al guardar el análisis'
+      
+      if (err instanceof ApiClientError) {
+        errorMessage = err.detail
+      } else if (err instanceof Error) {
+        errorMessage = err.message
+      }
+      
+      setError(errorMessage)
       console.error('Error al guardar:', err)
     } finally {
       setIsSaving(false)
@@ -107,36 +125,8 @@ const AnalyzeVideoView = () => {
         scriptBase={analysisData?.scriptBase}
         onSave={handleSave}
         isSaving={isSaving}
+        saveSuccess={saveSuccess}
       />
-
-      {/* Success Message */}
-      {saveSuccess && (
-        <motion.div
-          className="bg-green-500/10 border border-green-500/50 rounded-lg p-4"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-        >
-          <p className="text-green-400 text-sm flex items-center gap-2">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20 6L9 17l-5-5"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            Análisis guardado correctamente
-          </p>
-        </motion.div>
-      )}
     </div>
   )
 }
