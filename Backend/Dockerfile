@@ -19,10 +19,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiar código de la aplicación
 COPY app/ ./app/
 
-# Copiar whisper.cpp y compilar
-COPY whisper.cpp/ ./whisper.cpp/
-WORKDIR /app/whisper.cpp
-RUN mkdir -p build && \
+# Clonar y compilar whisper.cpp
+RUN git clone https://github.com/ggerganov/whisper.cpp.git && \
+    cd whisper.cpp && \
+    mkdir -p build && \
     cd build && \
     cmake .. && \
     make -j$(nproc)

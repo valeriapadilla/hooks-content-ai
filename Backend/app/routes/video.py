@@ -5,7 +5,10 @@ from app.models.video import (
     VideoAnalysisSaveRequest,
     VideoAnalysisSaveResponse,
     VideoAnalysisListResponse,
-    VideoAnalysisListItem
+    VideoAnalysisListItem,
+    HookGenerationRequest,
+    HookGenerationResponse,
+    GeneratedHook
 )
 from app.services.video_downloader import VideoDownloader
 from app.services.transcription_service import TranscriptionService
@@ -205,4 +208,63 @@ def get_video_analyses(
         raise HTTPException(
             status_code=500,
             detail=f"Error al obtener análisis: {str(e)}"
+        )
+
+
+@router.post("/generate-hooks", response_model=HookGenerationResponse)
+def generate_hooks(data: HookGenerationRequest):
+    """
+    Genera múltiples versiones de hooks basadas en una idea.
+    
+    Este endpoint toma una descripción de idea y genera diferentes tipos de hooks
+    (emocional, racional, sorpresa, controversial, curiosidad) con scores de retención.
+    
+    Args:
+        data: Request con la idea y opcionalmente el nicho
+            - idea: Descripción de la idea o guion base
+            - nicho: Nicho o categoría del contenido (opcional)
+            
+    Returns:
+        HookGenerationResponse con lista de hooks generados y ordenados por score
+        
+    Raises:
+        HTTPException: Si hay error al generar los hooks
+    """
+    try:
+        if not data.idea or not data.idea.strip():
+            raise HTTPException(
+                status_code=400,
+                detail="La idea no puede estar vacía"
+            )
+        
+        # Generar hooks con ChatGPT (responsabilidad: VideoAnalysisService)
+        hooks_data = video_analysis_service.generate_hooks(
+            idea=data.idea,
+            nicho=data.nicho
+        )
+        
+        # Convertir a modelos Pydantic
+        hooks = [
+            GeneratedHook(
+                text=hook.get("text", ""),
+                type=hook.get("type", ""),
+                retention_score=float(hook.get("retention_score", 0)),
+                description=hook.get("description")
+            )
+            for hook in hooks_data
+        ]
+        
+        return HookGenerationResponse(
+            status="success",
+            hooks=hooks
+        )
+    
+    except HTTPException:
+        raise
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al generar hooks: {str(e)}"
         )

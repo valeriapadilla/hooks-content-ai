@@ -149,4 +149,96 @@ class VideoAnalysisService:
             return analysis.get("replicable_template")
         except Exception:
             return None
+    
+    def generate_hooks(self, idea: str, nicho: Optional[str] = None) -> list[Dict[str, Any]]:
+        """
+        Genera múltiples versiones de hooks basadas en una idea.
+        
+        Args:
+            idea: Descripción de la idea o guion base
+            nicho: Nicho o categoría del contenido (opcional)
+            
+        Returns:
+            Lista de hooks generados con sus scores de retención
+            
+        Raises:
+            Exception: Si hay error al llamar a OpenAI o parsear la respuesta
+        """
+        if not idea or not idea.strip():
+            raise ValueError("La idea no puede estar vacía")
+        
+        nicho_context = f"\n\nNicho o categoría: {nicho}" if nicho else ""
+        
+        prompt = f"""Genera 5 versiones diferentes de hooks para la siguiente idea de video.
+        
+        IDEA: {idea}{nicho_context}
+        
+        Genera hooks de diferentes tipos:
+        1. EMOCIONAL: Conecta con emociones del espectador
+        2. RACIONAL: Usa lógica, datos o estadísticas
+        3. SORPRESA: Presenta algo inesperado o contraintuitivo
+        4. CONTROVERSIAL: Desafía creencias comunes
+        5. CURIOSIDAD: Crea una pregunta sin resolver
+        
+        Para cada hook, analiza su probabilidad de retención basándote en:
+        - Claridad y dirección
+        - Impacto emocional o intelectual
+        - Relevancia para el nicho
+        - Uso de técnicas probadas (estadísticas, preguntas, contraste)
+        
+        Responde en formato JSON con esta estructura:
+        {{
+            "hooks": [
+                {{
+                    "text": "Texto del hook",
+                    "type": "Emocional|Racional|Sorpresa|Controversial|Curiosidad",
+                    "retention_score": 75.5,
+                    "description": "Breve explicación de por qué funciona este hook"
+                }}
+            ]
+        }}
+        
+        Los hooks deben ser:
+        - Cortos (1-2 oraciones máximo)
+        - Impactantes desde la primera palabra
+        - Relevantes para la idea
+        - Variados en estilo
+        
+        IMPORTANTE: Ordena los hooks de mayor a menor retention_score."""
+        
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "Eres un experto en crear hooks virales para videos. Conoces las técnicas más efectivas para capturar atención y generar retención. Siempre respondes en formato JSON válido."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                response_format={"type": "json_object"},
+                temperature=0.8,  # Mayor creatividad para hooks variados
+                max_tokens=1500
+            )
+            
+            content = response.choices[0].message.content
+            
+            if not content:
+                raise Exception("OpenAI no devolvió contenido")
+            
+            result = json.loads(content)
+            hooks = result.get("hooks", [])
+            
+            # Ordenar por retention_score (de mayor a menor)
+            hooks.sort(key=lambda x: x.get("retention_score", 0), reverse=True)
+            
+            return hooks
+            
+        except json.JSONDecodeError as e:
+            raise Exception(f"Error al parsear respuesta de OpenAI: {str(e)}")
+        except Exception as e:
+            raise Exception(f"Error al generar hooks con OpenAI: {str(e)}")
 

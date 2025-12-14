@@ -7,19 +7,15 @@ __pycache__/
 venv/
 env/
 ENV/
+*.egg-info/
+.pytest_cache/
 
-# Downloads
+# Environment variables (add at runtime)
+.env
+.env.local
+
+# Downloads (mount as volume instead)
 downloads/
-*.mp4
-*.wav
-
-# Modelos (se descargan en build)
-*.bin
-*.pt
-
-# Git
-.git/
-.gitignore
 
 # IDE
 .vscode/
@@ -31,10 +27,18 @@ downloads/
 .DS_Store
 Thumbs.db
 
+# Git
+.git/
+.gitignore
+
 # Logs
 *.log
 
-# Environment
-.env
-.env.local
+# Documentation
+README.md
+setup.sh
 
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
