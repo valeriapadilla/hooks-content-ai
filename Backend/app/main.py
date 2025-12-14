@@ -10,9 +10,16 @@ app = FastAPI(
 
 # Configurar CORS
 # Permitir peticiones desde el frontend
+import os
+
+# Obtener origen del frontend desde variable de entorno (para producción)
+# O usar localhost para desarrollo
+frontend_origin = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        frontend_origin,
         "http://localhost:5173",  # Vite dev server
         "http://localhost:3000",  # React dev server (por si acaso)
         "http://127.0.0.1:5173",
