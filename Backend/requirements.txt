@@ -9,4 +9,3 @@ supabase
 openai
 python-dotenv
 PyJWT
-requests
