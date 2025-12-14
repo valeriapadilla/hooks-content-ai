@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Box, Paper, Typography } from '@mui/material'
 import VideoUrlInput from './VideoUrlInput'
 import VideoAnalysisResults from './VideoAnalysisResults'
 
@@ -14,7 +15,7 @@ const AnalyzeVideoView = () => {
     scriptBase?: string
   } | null>(null)
 
-  const handleSearch = async (url: string) => {
+  const handleSearch = async (_url: string) => {
     setIsLoading(true)
     setAnalysisData(null)
 
@@ -52,21 +53,45 @@ const AnalyzeVideoView = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold text-text mb-2">
+      <Box>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 700,
+            mb: 1,
+            color: 'text.primary',
+          }}
+        >
           Analizar Video
-        </h2>
-        <p className="text-text-secondary text-sm">
+        </Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            fontSize: '0.9375rem',
+          }}
+        >
           Ingresa la URL de un video viral para analizar su estructura, hook y obtener un script base replicable
-        </p>
-      </div>
+        </Typography>
+      </Box>
 
       {/* Input Section */}
-      <div className="bg-bg-secondary/80 border border-white/5 rounded-2xl p-6 md:p-8">
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 3, md: 4 },
+          borderRadius: 4,
+          background: 'linear-gradient(145deg, rgba(15, 15, 15, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid',
+          borderColor: 'rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        }}
+      >
         <VideoUrlInput onSearch={handleSearch} isLoading={isLoading} />
-      </div>
+      </Paper>
 
       {/* Results Section */}
       <VideoAnalysisResults
@@ -74,7 +99,7 @@ const AnalyzeVideoView = () => {
         hook={analysisData?.hook}
         scriptBase={analysisData?.scriptBase}
       />
-    </div>
+    </Box>
   )
 }
 
