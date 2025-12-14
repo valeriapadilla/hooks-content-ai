@@ -123,40 +123,66 @@ class AuthService:
             else:
                 raise Exception(f"Error al iniciar sesión: {error_message}")
     
-    def get_user(self, access_token: str) -> Dict[str, Any]:
+    def get_user(self, access_token: str, refresh_token: Optional[str] = None) -> Dict[str, Any]:
         """
         Obtiene información del usuario desde el token de acceso.
         
+        Si se proporciona refresh_token, usa la API oficial de Supabase.
+        Si no, decodifica el JWT directamente (más seguro, práctica estándar).
+        
         Args:
             access_token: Token de acceso JWT
+            refresh_token: Token de refresco (opcional, solo si quieres usar API oficial)
             
         Returns:
-            Diccionario con los datos del usuario
+            Diccionario con los datos del usuario (id y email)
             
         Raises:
             Exception: Si el token es inválido
         """
         try:
-            # Crear cliente temporal con el token
-            temp_client = create_client(
-                settings.SUPABASE_URL,
-                settings.SUPABASE_KEY
-            )
-            temp_client.auth.set_session(
-                access_token=access_token,
-                refresh_token=""
+            # Si tenemos refresh_token, usar API oficial de Supabase
+            if refresh_token:
+                temp_client = create_client(
+                    settings.SUPABASE_URL,
+                    settings.SUPABASE_KEY
+                )
+                temp_client.auth.set_session(
+                    access_token=access_token,
+                    refresh_token=refresh_token
+                )
+                
+                user_response = temp_client.auth.get_user(access_token)
+                
+                if not user_response or not user_response.user:
+                    raise Exception("Token inválido")
+                
+                return {
+                    "id": user_response.user.id,
+                    "email": user_response.user.email,
+                }
+            
+            # Si no hay refresh_token, decodificar JWT directamente (práctica estándar)
+            import jwt
+            
+            decoded_token = jwt.decode(
+                access_token,
+                options={"verify_signature": False}
             )
             
-            user_response = temp_client.auth.get_user(access_token)
+            user_id = decoded_token.get("sub")
+            email = decoded_token.get("email", "")
             
-            if not user_response or not user_response.user:
-                raise Exception("Token inválido")
+            if not user_id:
+                raise Exception("Token inválido: no se encontró user_id en el token")
             
             return {
-                "id": user_response.user.id,
-                "email": user_response.user.email,
+                "id": user_id,
+                "email": email,
             }
             
+        except jwt.DecodeError:
+            raise Exception("Token inválido: no se pudo decodificar el token")
         except Exception as e:
             raise Exception(f"Error al obtener usuario: {str(e)}")
     

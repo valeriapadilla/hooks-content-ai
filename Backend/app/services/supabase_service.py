@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from uuid import UUID
 from supabase import create_client, Client
 from app.config import settings
@@ -76,4 +76,38 @@ class SupabaseService:
             raise Exception("No se pudo guardar el análisis")
         
         return result.data[0]
+    
+    def get_video_analyses(
+        self,
+        user_id: str,
+        limit: Optional[int] = 50,
+        offset: Optional[int] = 0
+    ) -> List[Dict[str, Any]]:
+        """
+        Obtiene los análisis de video de un usuario.
+        
+        Args:
+            user_id: ID del usuario
+            limit: Número máximo de resultados (default: 50)
+            offset: Número de resultados a saltar (default: 0)
+            
+        Returns:
+            Lista de análisis de video del usuario
+        """
+        try:
+            user_id = user_id.strip()
+            
+            result = (
+                self.client.table("video_analyses")
+                .select("*")
+                .eq("user_id", user_id)
+                .order("created_at", desc=True)
+                .limit(limit or 50)
+                .offset(offset or 0)
+                .execute()
+            )
+            
+            return result.data if result.data else []
+        except Exception as e:
+            raise Exception(f"Error al obtener análisis de video: {str(e)}")
 
