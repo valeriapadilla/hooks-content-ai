@@ -188,7 +188,9 @@ def get_video_analyses(
                 id=str(analysis.get("id")),
                 video_url=analysis.get("video_url", ""),
                 video_title=analysis.get("video_title"),
+                transcript=analysis.get("transcript"),
                 hook=analysis.get("hook"),
+                script_base=analysis.get("script_base"),
                 platform=analysis.get("platform"),
                 created_at=format_datetime(analysis.get("created_at")),
                 updated_at=format_datetime(analysis.get("updated_at"))

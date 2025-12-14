@@ -13,6 +13,7 @@ import { videoService } from '../../services/videoService'
 import { ApiClientError } from '../../services/apiClient'
 import { getUserId } from '../../utils/authStorage'
 import VideoAnalysisCard from './VideoAnalysisCard'
+import VideoAnalysisModal from './VideoAnalysisModal'
 import type { VideoAnalysisListItem } from '../../types/api'
 
 interface TabPanelProps {
@@ -34,6 +35,8 @@ const MyAnalysesView = () => {
   const [videoAnalyses, setVideoAnalyses] = useState<VideoAnalysisListItem[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [selectedAnalysis, setSelectedAnalysis] = useState<VideoAnalysisListItem | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const loadVideoAnalyses = async () => {
     const userId = getUserId()
@@ -73,6 +76,16 @@ const MyAnalysesView = () => {
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
+  }
+
+  const handleCardClick = (analysis: VideoAnalysisListItem) => {
+    setSelectedAnalysis(analysis)
+    setModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setModalOpen(false)
+    setSelectedAnalysis(null)
   }
 
   return (
@@ -213,13 +226,16 @@ const MyAnalysesView = () => {
                   gridTemplateColumns: {
                     xs: '1fr',
                     sm: 'repeat(2, 1fr)',
-                    lg: 'repeat(3, 1fr)',
                   },
                   gap: 3,
                 }}
               >
                 {videoAnalyses.map((analysis) => (
-                  <VideoAnalysisCard key={analysis.id} analysis={analysis} />
+                  <VideoAnalysisCard
+                    key={analysis.id}
+                    analysis={analysis}
+                    onClick={() => handleCardClick(analysis)}
+                  />
                 ))}
               </Box>
             )}
@@ -262,6 +278,12 @@ const MyAnalysesView = () => {
           </TabPanel>
         </Box>
       </Paper>
+
+      <VideoAnalysisModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        analysis={selectedAnalysis}
+      />
     </Box>
   )
 }

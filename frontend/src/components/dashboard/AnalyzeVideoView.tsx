@@ -59,7 +59,7 @@ const AnalyzeVideoView = () => {
     }
   }
 
-  const handleSave = async () => {
+  const handleSave = async (title?: string) => {
     if (!analysisData || !videoUrl) return
 
     const userId = getUserId()
@@ -79,6 +79,7 @@ const AnalyzeVideoView = () => {
         transcript: analysisData.transcript,
         hook: analysisData.hook?.general || analysisData.hook?.used_in_video,
         script_base: analysisData.scriptBase,
+        video_title: title || undefined,
       })
       
       setSaveSuccess(true)

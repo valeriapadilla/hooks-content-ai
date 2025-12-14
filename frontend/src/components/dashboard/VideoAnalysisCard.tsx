@@ -6,9 +6,10 @@ import type { VideoAnalysisListItem } from '../../types/api'
 
 interface VideoAnalysisCardProps {
   analysis: VideoAnalysisListItem
+  onClick?: () => void
 }
 
-const VideoAnalysisCard = ({ analysis }: VideoAnalysisCardProps) => {
+const VideoAnalysisCard = ({ analysis, onClick }: VideoAnalysisCardProps) => {
   const formatDate = (dateString: string) => {
     if (!dateString) return 'Fecha no disponible'
     
@@ -42,6 +43,7 @@ const VideoAnalysisCard = ({ analysis }: VideoAnalysisCardProps) => {
   return (
     <Paper
       elevation={0}
+      onClick={onClick}
       sx={{
         p: 3,
         borderRadius: 3,
@@ -49,6 +51,7 @@ const VideoAnalysisCard = ({ analysis }: VideoAnalysisCardProps) => {
         border: '1px solid',
         borderColor: 'rgba(255, 255, 255, 0.08)',
         transition: 'all 0.2s ease-in-out',
+        cursor: onClick ? 'pointer' : 'default',
         '&:hover': {
           borderColor: 'rgba(255, 206, 69, 0.3)',
           transform: 'translateY(-2px)',
@@ -112,7 +115,10 @@ const VideoAnalysisCard = ({ analysis }: VideoAnalysisCardProps) => {
         <Tooltip title="Abrir video">
           <IconButton
             size="small"
-            onClick={() => window.open(analysis.video_url, '_blank')}
+            onClick={(e) => {
+              e.stopPropagation()
+              window.open(analysis.video_url, '_blank')
+            }}
             sx={{
               color: 'text.secondary',
               '&:hover': {

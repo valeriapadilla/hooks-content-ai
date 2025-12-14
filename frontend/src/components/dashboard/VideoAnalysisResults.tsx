@@ -1,9 +1,11 @@
-import { Box, Paper, Typography, Chip, Fade, Button, CircularProgress } from '@mui/material'
+import { useState, useEffect } from 'react'
+import { Box, Paper, Typography, Chip, Fade, Button, CircularProgress, TextField } from '@mui/material'
 import DescriptionIcon from '@mui/icons-material/Description'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import ArticleIcon from '@mui/icons-material/Article'
 import SaveIcon from '@mui/icons-material/Save'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import TitleIcon from '@mui/icons-material/Title'
 
 interface VideoAnalysisResultsProps {
   transcript?: string
@@ -13,7 +15,7 @@ interface VideoAnalysisResultsProps {
     type?: string
   }
   scriptBase?: string
-  onSave?: () => void
+  onSave?: (title?: string) => void
   isSaving?: boolean
   saveSuccess?: boolean
 }
@@ -26,6 +28,27 @@ const VideoAnalysisResults = ({
   isSaving = false,
   saveSuccess = false,
 }: VideoAnalysisResultsProps) => {
+  const [title, setTitle] = useState('')
+
+  // Resetear título cuando cambian los resultados
+  useEffect(() => {
+    if (!transcript && !hook && !scriptBase) {
+      setTitle('')
+    }
+  }, [transcript, hook, scriptBase])
+
+  const handleSaveClick = () => {
+    if (onSave) {
+      onSave(title.trim() || undefined)
+    }
+  }
+
+  // Limpiar título después de guardar exitosamente
+  useEffect(() => {
+    if (saveSuccess) {
+      setTitle('')
+    }
+  }, [saveSuccess])
   if (!transcript && !hook && !scriptBase) {
     return (
       <Fade in timeout={500}>
@@ -81,11 +104,52 @@ const VideoAnalysisResults = ({
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {/* Save Button */}
+          {/* Save Section */}
           {(transcript || hook || scriptBase) && onSave && (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+                <TitleIcon sx={{ color: 'secondary.main', fontSize: 20 }} />
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 600,
+                  }}
+                >
+                  Título del análisis (opcional)
+                </Typography>
+              </Box>
+              <TextField
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Ej: Receta de tostadas francesas"
+                disabled={isSaving}
+                fullWidth
+                size="small"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    bgcolor: 'rgba(255, 255, 255, 0.03)',
+                    '& fieldset': {
+                      borderColor: 'rgba(255, 255, 255, 0.08)',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: 'rgba(255, 255, 255, 0.15)',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: 'primary.main',
+                    },
+                  },
+                  '& .MuiInputBase-input': {
+                    color: 'text.primary',
+                    '&::placeholder': {
+                      color: 'text.secondary',
+                      opacity: 0.6,
+                    },
+                  },
+                }}
+              />
               <Button
-                onClick={onSave}
+                onClick={handleSaveClick}
                 disabled={isSaving}
                 variant="contained"
                 startIcon={isSaving ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />}
