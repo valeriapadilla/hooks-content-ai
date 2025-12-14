@@ -8,7 +8,7 @@ from app.models.video import (
     VideoAnalysisListItem,
     HookGenerationRequest,
     HookGenerationResponse,
-    GeneratedHook
+    GeneratedHook,
 )
 from app.services.video_downloader import VideoDownloader
 from app.services.transcription_service import TranscriptionService

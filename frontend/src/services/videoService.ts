@@ -10,6 +10,7 @@ import type {
   VideoAnalysisResponse,
   VideoAnalysisSaveRequest,
   VideoAnalysisSaveResponse,
+  VideoAnalysisListResponse,
 } from '../types/api'
 
 class VideoService {
@@ -33,6 +34,21 @@ class VideoService {
     return apiClient.post<VideoAnalysisSaveResponse>(
       API_ENDPOINTS.VIDEO.SAVE,
       data,
+      { requireAuth: true }
+    )
+  }
+
+  /**
+   * Obtiene los análisis de video guardados por un usuario.
+   * Requiere autenticación.
+   */
+  async getVideoAnalyses(
+    userId: string,
+    limit: number = 50,
+    offset: number = 0
+  ): Promise<VideoAnalysisListResponse> {
+    return apiClient.get<VideoAnalysisListResponse>(
+      `${API_ENDPOINTS.VIDEO.GET_ANALYSES}?user_id=${userId}&limit=${limit}&offset=${offset}`,
       { requireAuth: true }
     )
   }

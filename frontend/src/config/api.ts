@@ -18,6 +18,7 @@ export const API_ENDPOINTS = {
   VIDEO: {
     ANALYZE: '/video/analyze',
     SAVE: '/video/save',
+    GET_ANALYSES: '/video/analyses',
   },
 } as const
 

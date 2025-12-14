@@ -5,6 +5,7 @@ import Sidebar from '../components/dashboard/Sidebar'
 import DashboardTopBar from '../components/dashboard/DashboardTopBar'
 import DashboardView from '../components/dashboard/DashboardView'
 import AnalyzeVideoView from '../components/dashboard/AnalyzeVideoView'
+import MyAnalysesView from '../components/dashboard/MyAnalysesView'
 import StarryBackground from '../components/StarryBackground'
 import { useAuth } from '../hooks/useAuth'
 
@@ -58,7 +59,7 @@ const Dashboard = () => {
             }}
           >
             {activeView === 'historial' ? (
-              <DashboardView message="Pronto podrás ver aquí tu historial de análisis más recientes." />
+              <MyAnalysesView />
             ) : activeView === 'analizar' ? (
               <AnalyzeVideoView />
             ) : activeView === 'hooks' ? (

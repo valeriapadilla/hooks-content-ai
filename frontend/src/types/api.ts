@@ -67,3 +67,19 @@ export interface VideoAnalysisSaveResponse {
   analysis_id?: string
 }
 
+export interface VideoAnalysisListItem {
+  id: string
+  video_url: string
+  video_title?: string | null
+  hook?: string | null
+  platform?: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface VideoAnalysisListResponse {
+  status: string
+  data: VideoAnalysisListItem[]
+  total: number
+}
+
