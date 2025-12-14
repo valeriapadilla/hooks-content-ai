@@ -1,6 +1,5 @@
-# Modelos de whisper
+# Modelos de whisper (archivos de ML, no código)
 whisper/
-models/
 *.pt
 *.bin
 
