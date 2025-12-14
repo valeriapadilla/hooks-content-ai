@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Paper, List } from '@mui/material'
 import SidebarLink from './SidebarLink'
 import { DASHBOARD_NAV_ITEMS } from '../../constants/dashboard'
 
@@ -8,22 +8,21 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ selected, onChange }: SidebarProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false)
-
   return (
-    <aside
-      className={`bg-bg-secondary/80 border border-white/5 rounded-2xl p-4 flex flex-col gap-4 transition-all duration-300 ${
-        isCollapsed ? 'w-[72px]' : 'w-full md:w-[240px]'
-      }`}
+    <Paper
+      elevation={0}
+      sx={{
+        width: { xs: '100%', md: 260 },
+        p: 2,
+        borderRadius: 4,
+        background: 'linear-gradient(145deg, rgba(15, 15, 15, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid',
+        borderColor: 'rgba(255, 255, 255, 0.08)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+      }}
     >
-      <button
-        className="self-end text-xs text-text-secondary border border-white/10 rounded-full px-3 py-1 hover:text-text transition-colors md:hidden"
-        onClick={() => setIsCollapsed(!isCollapsed)}
-      >
-        {isCollapsed ? 'Expandir' : 'Colapsar'}
-      </button>
-
-      <div className="flex flex-col gap-1">
+      <List sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, p: 0 }}>
         {DASHBOARD_NAV_ITEMS.map((item) => (
           <SidebarLink
             key={item.id}
@@ -33,8 +32,8 @@ const Sidebar = ({ selected, onChange }: SidebarProps) => {
             onClick={() => onChange(item.id)}
           />
         ))}
-      </div>
-    </aside>
+      </List>
+    </Paper>
   )
 }
 

@@ -4,11 +4,7 @@ import FeatureTag from './home/FeatureTag'
 import HeroTitle from './home/HeroTitle'
 import HeroCTA from './home/HeroCTA'
 
-interface HomeSectionProps {
-  scrollToSection?: (sectionId: string) => void
-}
-
-const HomeSection = ({ scrollToSection }: HomeSectionProps) => {
+const HomeSection = () => {
   const navigate = useNavigate()
   
   return (

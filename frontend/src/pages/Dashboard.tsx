@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Box, Container } from '@mui/material'
 import Sidebar from '../components/dashboard/Sidebar'
 import DashboardTopBar from '../components/dashboard/DashboardTopBar'
 import DashboardView from '../components/dashboard/DashboardView'
@@ -22,18 +23,40 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="relative min-h-screen bg-bg text-text">
-      <StarryBackground />
-      <div className="relative z-[1] min-h-screen flex flex-col">
-        <DashboardTopBar onNavigate={handleNavigate} onLogout={handleLogout} />
-        <div className="flex flex-1 flex-col md:flex-row gap-6 p-4 md:p-8">
+    <Box
+      sx={{
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+        color: 'text.primary',
+      }}
+    >
+      <DashboardTopBar onNavigate={handleNavigate} onLogout={handleLogout} />
+      <Container
+        maxWidth="xl"
+        sx={{
+          py: { xs: 3, md: 5 },
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: 3,
+          }}
+        >
           <Sidebar 
             selected={activeView === 'historial' ? 'analizar' : activeView} 
             onChange={(id) => {
               setActiveView(id as typeof activeView)
             }} 
           />
-          <main className="flex-1">
+          <Box
+            component="main"
+            sx={{
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
             {activeView === 'historial' ? (
               <DashboardView message="Pronto podrás ver aquí tu historial de análisis más recientes." />
             ) : activeView === 'analizar' ? (
@@ -43,10 +66,10 @@ const Dashboard = () => {
             ) : (
               <DashboardView message="Pronto podrás actualizar tu información y preferencias aquí." />
             )}
-          </main>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Container>
+    </Box>
   )
 }
 

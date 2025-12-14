@@ -1,4 +1,9 @@
-import { motion } from 'framer-motion'
+import { Box, Paper, Typography, Chip, Fade, Button, CircularProgress } from '@mui/material'
+import DescriptionIcon from '@mui/icons-material/Description'
+import LocalOfferIcon from '@mui/icons-material/LocalOffer'
+import ArticleIcon from '@mui/icons-material/Article'
+import SaveIcon from '@mui/icons-material/Save'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
 interface VideoAnalysisResultsProps {
   transcript?: string
@@ -21,229 +26,296 @@ const VideoAnalysisResults = ({
   isSaving = false,
   saveSuccess = false,
 }: VideoAnalysisResultsProps) => {
-  // Si no hay datos, mostrar estado vacío
   if (!transcript && !hook && !scriptBase) {
     return (
-      <motion.div
-        className="bg-bg-secondary/80 border border-white/5 rounded-2xl p-8 text-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-[#FFCE45] text-2xl">
-            📹
-          </div>
-          <p className="text-text-secondary text-sm">
-            Ingresa una URL de video y haz clic en "Buscar" para ver el análisis aquí
-          </p>
-        </div>
-      </motion.div>
+      <Fade in timeout={500}>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 6,
+            textAlign: 'center',
+            borderRadius: 4,
+            background: 'linear-gradient(145deg, rgba(15, 15, 15, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid',
+            borderColor: 'rgba(255, 255, 255, 0.08)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+          }}
+        >
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <Box
+              sx={{
+                width: 80,
+                height: 80,
+                borderRadius: '50%',
+                bgcolor: 'rgba(255, 255, 255, 0.05)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '2.5rem',
+              }}
+            >
+              📹
+            </Box>
+            <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.9375rem' }}>
+              Ingresa una URL de video y haz clic en "Buscar" para ver el análisis aquí
+            </Typography>
+          </Box>
+        </Paper>
+      </Fade>
     )
   }
 
   return (
-    <motion.div
-      className="bg-bg-secondary/80 border border-white/5 rounded-2xl p-6 md:p-8"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      {/* Header con botón Guardar */}
-      {(transcript || hook || scriptBase) && onSave && (
-        <motion.div
-          className="flex flex-col gap-3 mb-6"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <button
-            onClick={onSave}
-            disabled={isSaving}
-            className="px-6 py-3 text-sm rounded-lg font-medium text-[#0A0A0A] bg-[#FFCE45] hover:bg-[#E6B83D] transition-colors duration-200 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 w-fit"
-          >
-            {isSaving ? (
-              <>
-                <svg
-                  className="animate-spin h-4 w-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
+    <Fade in timeout={500}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 3, md: 4 },
+          borderRadius: 4,
+          background: 'linear-gradient(145deg, rgba(15, 15, 15, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid',
+          borderColor: 'rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        }}
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {/* Save Button */}
+          {(transcript || hook || scriptBase) && onSave && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Button
+                onClick={onSave}
+                disabled={isSaving}
+                variant="contained"
+                startIcon={isSaving ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />}
+                sx={{
+                  alignSelf: 'flex-start',
+                  bgcolor: '#FFCE45',
+                  color: '#0A0A0A',
+                  '&:hover': {
+                    bgcolor: '#E6B83D',
+                  },
+                  '&:disabled': {
+                    bgcolor: 'rgba(255, 206, 69, 0.5)',
+                  },
+                }}
+              >
+                {isSaving ? 'Guardando...' : 'Guardar Análisis'}
+              </Button>
+              {saveSuccess && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    color: 'success.main',
+                    fontSize: '0.875rem',
+                  }}
                 >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Guardando...
-              </>
-            ) : (
-              <>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <polyline
-                    points="17 21 17 13 7 13 7 21"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <polyline
-                    points="7 3 7 8 15 8"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                Guardar Análisis
-              </>
-            )}
-          </button>
-          {saveSuccess && (
-            <motion.div
-              className="bg-green-500/10 border border-green-500/50 rounded-lg p-3 w-fit"
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-            >
-              <p className="text-green-400 text-sm flex items-center gap-2">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M20 6L9 17l-5-5"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                Análisis guardado correctamente
-              </p>
-            </motion.div>
+                  <CheckCircleIcon sx={{ fontSize: 18 }} />
+                  <Typography variant="body2" sx={{ color: 'success.main' }}>
+                    Análisis guardado correctamente
+                  </Typography>
+                </Box>
+              )}
+            </Box>
           )}
-        </motion.div>
-      )}
 
-      {/* Layout de 2 columnas */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Columna 1: Script del Video */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 }}
-          className="space-y-4"
-        >
+          {/* Transcript Section */}
           {transcript && (
-            <section>
-              <h3 className="text-lg font-semibold text-text mb-3 flex items-center gap-2">
-                <span className="text-[#FFCE45]">📝</span>
-                Script del Video
-              </h3>
-              <div className="bg-white/5 border border-white/10 rounded-lg p-4 h-full max-h-[600px] overflow-y-auto">
-                <p className="text-text-secondary text-sm leading-relaxed whitespace-pre-wrap">
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                <DescriptionIcon sx={{ color: 'secondary.main', fontSize: 24 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  Transcripción
+                </Typography>
+              </Box>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid',
+                  borderColor: 'rgba(255, 255, 255, 0.08)',
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                    lineHeight: 1.75,
+                    whiteSpace: 'pre-wrap',
+                    fontSize: '0.9375rem',
+                  }}
+                >
                   {transcript}
-                </p>
-              </div>
-            </section>
+                </Typography>
+              </Paper>
+            </Box>
           )}
-        </motion.div>
 
-        {/* Columna 2: Hook y Script Base */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="space-y-4"
-        >
           {/* Hook Section */}
           {hook && (
-            <section>
-              <h3 className="text-lg font-semibold text-text mb-3 flex items-center gap-2">
-                <span className="text-[#FFCE45]">🎣</span>
-                Hook Identificado
-              </h3>
-              <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-4">
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                <LocalOfferIcon sx={{ color: 'secondary.main', fontSize: 24 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  Hook Identificado
+                </Typography>
+              </Box>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid',
+                  borderColor: 'rgba(255, 255, 255, 0.08)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 3,
+                }}
+              >
                 {hook.general && (
-                  <div>
-                    <p className="text-xs font-medium text-text-secondary mb-2">
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: 'text.secondary',
+                        fontWeight: 600,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                        mb: 1,
+                        display: 'block',
+                      }}
+                    >
                       Hook General (Reutilizable)
-                    </p>
-                    <p className="text-text text-base font-medium bg-[#FFCE45]/10 border border-[#FFCE45]/20 rounded-lg px-4 py-3 leading-relaxed">
-                      {hook.general}
-                    </p>
-                  </div>
+                    </Typography>
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        p: 2,
+                        borderRadius: 1.5,
+                        bgcolor: 'rgba(255, 206, 69, 0.1)',
+                        border: '1px solid',
+                        borderColor: 'rgba(255, 206, 69, 0.25)',
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.primary',
+                          fontWeight: 500,
+                          fontSize: '0.9375rem',
+                        }}
+                      >
+                        {hook.general}
+                      </Typography>
+                    </Paper>
+                  </Box>
                 )}
                 {hook.used_in_video && (
-                  <div>
-                    <p className="text-xs font-medium text-text-secondary mb-2">
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: 'text.secondary',
+                        fontWeight: 600,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                        mb: 1,
+                        display: 'block',
+                      }}
+                    >
                       Hook Usado en el Video
-                    </p>
-                    <p className="text-text-secondary text-sm leading-relaxed">
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                        fontSize: '0.9375rem',
+                      }}
+                    >
                       {hook.used_in_video}
-                    </p>
-                  </div>
+                    </Typography>
+                  </Box>
                 )}
                 {hook.type && (
-                  <div className="flex items-center gap-2 pt-2 border-t border-white/10">
-                    <span className="text-xs font-medium text-text-secondary">
-                      Tipo de Hook:
-                    </span>
-                    <span className="text-xs px-3 py-1 rounded-full bg-[#FFCE45]/20 text-[#FFCE45] font-medium capitalize">
-                      {hook.type}
-                    </span>
-                  </div>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 2,
+                      pt: 2,
+                      borderTop: '1px solid',
+                      borderColor: 'rgba(255, 255, 255, 0.08)',
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: 'text.secondary',
+                        fontWeight: 600,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                      }}
+                    >
+                      Tipo:
+                    </Typography>
+                    <Chip
+                      label={hook.type}
+                      size="small"
+                      sx={{
+                        bgcolor: 'rgba(255, 206, 69, 0.2)',
+                        color: 'secondary.main',
+                        fontWeight: 600,
+                        fontSize: '0.75rem',
+                      }}
+                    />
+                  </Box>
                 )}
-              </div>
-            </section>
+              </Paper>
+            </Box>
           )}
 
           {/* Script Base Section */}
           {scriptBase && (
-            <section>
-              <h3 className="text-lg font-semibold text-text mb-3 flex items-center gap-2">
-                <span className="text-[#FFCE45]">📋</span>
-                Script Base para Replicar
-              </h3>
-              <div className="bg-gradient-to-br from-[#FFCE45]/10 to-[#FFCE45]/5 border border-[#FFCE45]/20 rounded-lg p-5">
-                <p className="text-text text-sm leading-relaxed whitespace-pre-wrap font-medium">
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                <ArticleIcon sx={{ color: 'secondary.main', fontSize: 24 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  Script Base Replicable
+                </Typography>
+              </Box>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid',
+                  borderColor: 'rgba(255, 255, 255, 0.08)',
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                    lineHeight: 1.75,
+                    whiteSpace: 'pre-wrap',
+                    fontSize: '0.9375rem',
+                  }}
+                >
                   {scriptBase}
-                </p>
-                <p className="text-xs text-text-secondary mt-3 pt-3 border-t border-white/10">
-                  💡 <span className="font-medium">Tip:</span> Usa este script base y personaliza los espacios en blanco (____) con tu propio contenido.
-                </p>
-              </div>
-            </section>
+                </Typography>
+              </Paper>
+            </Box>
           )}
-        </motion.div>
-      </div>
-    </motion.div>
+        </Box>
+      </Paper>
+    </Fade>
   )
 }
 

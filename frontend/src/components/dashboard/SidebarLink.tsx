@@ -1,4 +1,7 @@
-import { cn } from '../../utils/cn'
+import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import SearchIcon from '@mui/icons-material/Search'
+import BoltIcon from '@mui/icons-material/Bolt'
+import PersonIcon from '@mui/icons-material/Person'
 
 interface SidebarLinkProps {
   label: string
@@ -7,73 +10,48 @@ interface SidebarLinkProps {
   onClick: () => void
 }
 
-const icons: Record<SidebarLinkProps['icon'], JSX.Element> = {
-  search: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M21 21L16.65 16.65"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  ),
-  bolt: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M13 2L3 14H12L11 22L21 10H12L13 2Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-    </svg>
-  ),
-  user: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  ),
+const iconMap = {
+  search: SearchIcon,
+  bolt: BoltIcon,
+  user: PersonIcon,
 }
 
 const SidebarLink = ({ label, icon, isActive, onClick }: SidebarLinkProps) => {
+  const IconComponent = iconMap[icon]
+
   return (
-    <button
-      className={cn(
-        'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-        isActive
-          ? 'text-[#FFCE45] bg-white/5'
-          : 'text-text-secondary hover:text-text hover:bg-white/5'
-      )}
+    <ListItemButton
       onClick={onClick}
+      sx={{
+        borderRadius: 2,
+        px: 2,
+        py: 1.5,
+        mb: 0.5,
+        bgcolor: isActive ? 'rgba(255, 206, 69, 0.12)' : 'transparent',
+        color: isActive ? 'secondary.main' : 'text.secondary',
+        transition: 'all 0.2s ease',
+        '&:hover': {
+          bgcolor: isActive ? 'rgba(255, 206, 69, 0.18)' : 'rgba(255, 255, 255, 0.05)',
+          color: isActive ? 'secondary.main' : 'text.primary',
+        },
+      }}
     >
-      <span className={cn('text-text-secondary', isActive && 'text-[#FFCE45]')}>
-        {icons[icon]}
-      </span>
-      <span>{label}</span>
-    </button>
+      <ListItemIcon
+        sx={{
+          minWidth: 40,
+          color: isActive ? 'secondary.main' : 'text.secondary',
+        }}
+      >
+        <IconComponent sx={{ fontSize: 20 }} />
+      </ListItemIcon>
+      <ListItemText
+        primary={label}
+        primaryTypographyProps={{
+          fontSize: '0.9375rem',
+          fontWeight: isActive ? 600 : 500,
+        }}
+      />
+    </ListItemButton>
   )
 }
 
