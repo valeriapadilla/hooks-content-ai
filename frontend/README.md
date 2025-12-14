@@ -1,59 +1,36 @@
-# Xtract - Crea Videos Virales con IA
+# Hooks AI - Frontend
 
-Aplicación web para ayudar a creadores a aprender a crear videos virales mediante el análisis de contenido exitoso y la generación asistida por IA de hooks, guiones y estructuras.
+Aplicación web para ayudar a creadores de contenido a construir hooks efectivos y aprender de videos virales mediante análisis inteligente.
 
-## 🚀 Tecnologías
+## Propósito
 
-- **React 18** - Biblioteca de UI
-- **TypeScript** - Tipado estático
-- **Vite** - Build tool y dev server
-- **Framer Motion** - Animaciones
-- **CSS3** - Estilos personalizados
+Permite a los usuarios analizar videos exitosos para:
+- Identificar hooks efectivos y reutilizables
+- Generar scripts base personalizables
+- Aprender patrones de contenido viral
+- Crear hooks propios basados en ideas
 
-## 📦 Instalación
+## Tecnologías
 
-```bash
-# Instalar dependencias
-npm install
+- **React**: Biblioteca para interfaces de usuario
+- **TypeScript**: Tipado estático
+- **Material-UI (MUI)**: Componentes de UI
+- **React Router DOM**: Navegación
+- **Framer Motion**: Animaciones
+- **Vite**: Build tool
 
-# Iniciar servidor de desarrollo
-npm run dev
+## Metodologías
 
-# Build para producción
-npm run build
+El código sigue **SRP (Single Responsibility Principle)** y **DRY (Don't Repeat Yourself)**:
 
-# Preview del build
-npm run preview
+- `components/`: Componentes reutilizables
+- `services/`: Comunicación con API
+- `hooks/`: Custom hooks (useAuth, etc.)
+- `pages/`: Páginas principales
+- `utils/`: Utilidades compartidas
+
+## Variables de Entorno
+
+```env
+VITE_API_URL=http://localhost:8000
 ```
-
-## 🎨 Características
-
-- ✨ Animación de fondo con estrellas y glow púrpura
-- 📱 Diseño responsive
-- 🎯 Navegación suave entre secciones
-- 💜 Tema oscuro con acentos púrpura
-- ⚡ Optimizado para rendimiento
-
-## 📁 Estructura del Proyecto
-
-```
-src/
-├── components/
-│   ├── Header.tsx          # Navegación principal
-│   ├── HeroSection.tsx     # Sección hero/home
-│   ├── ServicesSection.tsx # Sección de servicios
-│   ├── ContactSection.tsx  # Formulario de contacto
-│   ├── Footer.tsx          # Footer
-│   └── StarryBackground.tsx # Animación de fondo
-├── App.tsx                 # Componente principal
-├── main.tsx               # Punto de entrada
-└── index.css              # Estilos globales
-```
-
-## 🔮 Próximas Features
-
-- [ ] Análisis de videos virales por URL
-- [ ] Generación de hooks con IA
-- [ ] Estructuras de guiones personalizadas
-- [ ] Sistema de autenticación
-- [ ] Dashboard de usuario
