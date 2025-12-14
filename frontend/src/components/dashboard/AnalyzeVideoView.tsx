@@ -25,7 +25,7 @@ const AnalyzeVideoView = () => {
     scriptBase?: string
   } | null>(null)
 
-  const handleSearch = async (_url: string) => {
+  const handleSearch = async (url: string) => {
     setIsLoading(true)
     setAnalysisData(null)
     setError(null)
@@ -138,13 +138,25 @@ const AnalyzeVideoView = () => {
         }}
       >
         <VideoUrlInput onSearch={handleSearch} isLoading={isLoading} />
-      </Paper>
         {error && (
-          <div className="mt-4 bg-red-500/10 border border-red-500/50 rounded-lg p-3">
-            <p className="text-red-400 text-sm">{error}</p>
-          </div>
+          <Box sx={{ mt: 2 }}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2,
+                borderRadius: 2,
+                bgcolor: 'error.dark',
+                border: '1px solid',
+                borderColor: 'error.main',
+              }}
+            >
+              <Typography variant="body2" sx={{ color: 'error.light' }}>
+                {error}
+              </Typography>
+            </Paper>
+          </Box>
         )}
-      </div>
+      </Paper>
 
       {/* Results Section */}
       <VideoAnalysisResults
