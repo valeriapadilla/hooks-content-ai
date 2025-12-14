@@ -7,7 +7,6 @@ import DashboardView from '../components/dashboard/DashboardView'
 import AnalyzeVideoView from '../components/dashboard/AnalyzeVideoView'
 import MyAnalysesView from '../components/dashboard/MyAnalysesView'
 import ProfileView from '../components/dashboard/ProfileView'
-import StarryBackground from '../components/StarryBackground'
 import { useAuth } from '../hooks/useAuth'
 
 const Dashboard = () => {

@@ -2,7 +2,6 @@ import { Box } from '@mui/material';
 import {
   Navbar,
   HeroSection,
-  TestimonialSection,
   HowItWorksSection,
   FeaturesSection,
   Footer,

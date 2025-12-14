@@ -71,7 +71,9 @@ export interface VideoAnalysisListItem {
   id: string
   video_url: string
   video_title?: string | null
+  transcript?: string | null
   hook?: string | null
+  script_base?: string | null
   platform?: string | null
   created_at: string
   updated_at: string

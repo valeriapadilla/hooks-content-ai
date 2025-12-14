@@ -15,7 +15,7 @@ import { useAuth } from '../hooks/useAuth'
 
 const LoginPage = () => {
   const navigate = useNavigate()
-  const { signIn, isLoading, error, isAuth } = useAuth()
+  const { signIn, isLoading, isAuth } = useAuth()
 
   useEffect(() => {
     if (isAuth) {

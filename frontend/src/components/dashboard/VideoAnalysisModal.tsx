@@ -7,7 +7,6 @@ import {
   Paper,
   Typography,
   Chip,
-  Divider,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import DescriptionIcon from '@mui/icons-material/Description'
