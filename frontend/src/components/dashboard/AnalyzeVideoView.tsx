@@ -1,10 +1,20 @@
 import { useState } from 'react'
 import { Box, Paper, Typography } from '@mui/material'
+
+import { videoService } from '../../services/videoService'
+import { ApiClientError } from '../../services/apiClient'
+import { getUserId } from '../../utils/authStorage'
+
 import VideoUrlInput from './VideoUrlInput'
 import VideoAnalysisResults from './VideoAnalysisResults'
+import type { VideoAnalysisResponse } from '../../types/api'
 
 const AnalyzeVideoView = () => {
   const [isLoading, setIsLoading] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [saveSuccess, setSaveSuccess] = useState(false)
+  const [videoUrl, setVideoUrl] = useState<string>('')
   const [analysisData, setAnalysisData] = useState<{
     transcript?: string
     hook?: {
@@ -18,37 +28,74 @@ const AnalyzeVideoView = () => {
   const handleSearch = async (_url: string) => {
     setIsLoading(true)
     setAnalysisData(null)
+    setError(null)
+    setVideoUrl(url)
 
-    // TODO: Implementar llamada al backend
-    // Por ahora solo simulamos una respuesta
     try {
-      // Simulación de delay
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      const response: VideoAnalysisResponse = await videoService.analyzeVideo({ url })
 
-      // TODO: Reemplazar con llamada real al backend
-      // const response = await fetch('/api/video/analyze', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ url })
-      // })
-      // const data = await response.json()
-      // setAnalysisData(data)
-
-      // Datos de ejemplo (eliminar cuando se implemente el backend)
       setAnalysisData({
-        transcript: 'Este es un ejemplo de transcripción del video...',
+        transcript: response.transcript,
         hook: {
-          general: 'Deja de hacer lo mismo siempre, ya aprendí a...',
-          used_in_video: 'Deja de desayunar lo mismo siempre, ya aprendí a preparar estas tostadas francesas de tiramisú',
-          type: 'curiosidad'
+          general: response.hook?.general,
+          used_in_video: response.hook?.used_in_video,
+          type: response.hook?.type,
         },
-        scriptBase: 'Deja de hacer lo mismo siempre, ya aprendí a preparar ____. Comienza con ____ y añade ____. Finaliza con ____.'
+        scriptBase: response.script_base,
       })
-    } catch (error) {
-      console.error('Error al analizar video:', error)
-      // TODO: Mostrar mensaje de error al usuario
+    } catch (err) {
+      let errorMessage = 'Error al analizar el video'
+      
+      if (err instanceof ApiClientError) {
+        errorMessage = err.detail
+      } else if (err instanceof Error) {
+        errorMessage = err.message
+      }
+      
+      setError(errorMessage)
+      console.error('Error al analizar video:', err)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleSave = async () => {
+    if (!analysisData || !videoUrl) return
+
+    const userId = getUserId()
+    if (!userId) {
+      setError('Debes iniciar sesión para guardar análisis')
+      return
+    }
+
+    setIsSaving(true)
+    setSaveSuccess(false)
+    setError(null)
+
+    try {
+      await videoService.saveVideoAnalysis({
+        user_id: userId,
+        video_url: videoUrl,
+        transcript: analysisData.transcript,
+        hook: analysisData.hook?.general || analysisData.hook?.used_in_video,
+        script_base: analysisData.scriptBase,
+      })
+      
+      setSaveSuccess(true)
+      setTimeout(() => setSaveSuccess(false), 3000)
+    } catch (err) {
+      let errorMessage = 'Error al guardar el análisis'
+      
+      if (err instanceof ApiClientError) {
+        errorMessage = err.detail
+      } else if (err instanceof Error) {
+        errorMessage = err.message
+      }
+      
+      setError(errorMessage)
+      console.error('Error al guardar:', err)
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -92,12 +139,21 @@ const AnalyzeVideoView = () => {
       >
         <VideoUrlInput onSearch={handleSearch} isLoading={isLoading} />
       </Paper>
+        {error && (
+          <div className="mt-4 bg-red-500/10 border border-red-500/50 rounded-lg p-3">
+            <p className="text-red-400 text-sm">{error}</p>
+          </div>
+        )}
+      </div>
 
       {/* Results Section */}
       <VideoAnalysisResults
         transcript={analysisData?.transcript}
         hook={analysisData?.hook}
         scriptBase={analysisData?.scriptBase}
+        onSave={handleSave}
+        isSaving={isSaving}
+        saveSuccess={saveSuccess}
       />
     </Box>
   )

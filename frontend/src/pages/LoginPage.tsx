@@ -1,5 +1,5 @@
-import { useState, FormEvent } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { FormEvent, useEffect } from 'react'
+import { useNavigate, Link as RouterLink } from 'react-router-dom'
 import {
   Box,
   Container,
@@ -9,30 +9,34 @@ import {
   Button,
   Link,
   CircularProgress,
-} from '@mui/material';
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+} from '@mui/material'
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch'
+import { useAuth } from '../hooks/useAuth'
 
 const LoginPage = () => {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate()
+  const { signIn, isLoading, error, isAuth } = useAuth()
+
+  useEffect(() => {
+    if (isAuth) {
+      navigate('/dashboard')
+    }
+  }, [isAuth, navigate])
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
+    e.preventDefault()
 
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
+    const formData = new FormData(e.currentTarget)
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
 
-    // TODO: Implementar lógica de login con Supabase
-    console.log('Login:', { email, password });
-
-    // Simulación de login
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate('/dashboard');
-    }, 1000);
-  };
+    try {
+      await signIn({ email, password })
+      navigate('/dashboard')
+    } catch (err) {
+      console.error('Error al iniciar sesión:', err)
+    }
+  }
 
   return (
     <Box
@@ -45,7 +49,6 @@ const LoginPage = () => {
         px: 2,
         py: 4,
         position: 'relative',
-        // Gradient background
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -216,7 +219,7 @@ const LoginPage = () => {
         </Typography>
       </Paper>
     </Box>
-  );
-};
+  )
+}
 
-export default LoginPage;
+export default LoginPage

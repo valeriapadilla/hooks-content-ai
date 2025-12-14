@@ -1,9 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from app.models.video import (
     VideoRequest,
     VideoAnalysisResponse,
     VideoAnalysisSaveRequest,
-    VideoAnalysisSaveResponse
+    VideoAnalysisSaveResponse,
+    VideoAnalysisListResponse,
+    VideoAnalysisListItem
 )
 from app.services.video_downloader import VideoDownloader
 from app.services.transcription_service import TranscriptionService
@@ -141,4 +143,66 @@ def save_video_analysis(data: VideoAnalysisSaveRequest):
         raise HTTPException(
             status_code=500,
             detail=f"Error al guardar el análisis: {str(e)}"
+        )
+
+
+@router.get("/analyses", response_model=VideoAnalysisListResponse)
+def get_video_analyses(
+    user_id: str = Query(..., description="ID del usuario"),
+    limit: int = Query(50, ge=1, le=100, description="Número máximo de resultados"),
+    offset: int = Query(0, ge=0, description="Número de resultados a saltar")
+):
+    """
+    Obtiene los análisis de video guardados por un usuario.
+    """
+    try:
+        if not user_id:
+            raise HTTPException(
+                status_code=400,
+                detail="user_id es requerido"
+            )
+        
+        user_id = user_id.strip()
+        
+        analyses = supabase_service.get_video_analyses(
+            user_id=user_id,
+            limit=limit,
+            offset=offset
+        )
+        
+        def format_datetime(dt_value):
+            """Formatea datetime a string, manejando tanto objetos datetime como strings."""
+            if not dt_value:
+                return ""
+            if isinstance(dt_value, str):
+                return dt_value
+            if hasattr(dt_value, 'isoformat'):
+                return dt_value.isoformat()
+            return str(dt_value)
+        
+        analyses_list = [
+            VideoAnalysisListItem(
+                id=str(analysis.get("id")),
+                video_url=analysis.get("video_url", ""),
+                video_title=analysis.get("video_title"),
+                hook=analysis.get("hook"),
+                platform=analysis.get("platform"),
+                created_at=format_datetime(analysis.get("created_at")),
+                updated_at=format_datetime(analysis.get("updated_at"))
+            )
+            for analysis in analyses
+        ]
+        
+        return VideoAnalysisListResponse(
+            status="success",
+            data=analyses_list,
+            total=len(analyses_list)
+        )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al obtener análisis: {str(e)}"
         )

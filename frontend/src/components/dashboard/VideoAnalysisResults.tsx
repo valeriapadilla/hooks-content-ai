@@ -1,7 +1,9 @@
-import { Box, Paper, Typography, Chip, Fade } from '@mui/material'
+import { Box, Paper, Typography, Chip, Fade, Button, CircularProgress } from '@mui/material'
 import DescriptionIcon from '@mui/icons-material/Description'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import ArticleIcon from '@mui/icons-material/Article'
+import SaveIcon from '@mui/icons-material/Save'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
 interface VideoAnalysisResultsProps {
   transcript?: string
@@ -11,14 +13,19 @@ interface VideoAnalysisResultsProps {
     type?: string
   }
   scriptBase?: string
+  onSave?: () => void
+  isSaving?: boolean
+  saveSuccess?: boolean
 }
 
 const VideoAnalysisResults = ({
   transcript,
   hook,
   scriptBase,
+  onSave,
+  isSaving = false,
+  saveSuccess = false,
 }: VideoAnalysisResultsProps) => {
-  // Si no hay datos, mostrar estado vacío
   if (!transcript && !hook && !scriptBase) {
     return (
       <Fade in timeout={500}>
@@ -74,6 +81,47 @@ const VideoAnalysisResults = ({
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {/* Save Button */}
+          {(transcript || hook || scriptBase) && onSave && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Button
+                onClick={onSave}
+                disabled={isSaving}
+                variant="contained"
+                startIcon={isSaving ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />}
+                sx={{
+                  alignSelf: 'flex-start',
+                  bgcolor: '#FFCE45',
+                  color: '#0A0A0A',
+                  '&:hover': {
+                    bgcolor: '#E6B83D',
+                  },
+                  '&:disabled': {
+                    bgcolor: 'rgba(255, 206, 69, 0.5)',
+                  },
+                }}
+              >
+                {isSaving ? 'Guardando...' : 'Guardar Análisis'}
+              </Button>
+              {saveSuccess && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    color: 'success.main',
+                    fontSize: '0.875rem',
+                  }}
+                >
+                  <CheckCircleIcon sx={{ fontSize: 18 }} />
+                  <Typography variant="body2" sx={{ color: 'success.main' }}>
+                    Análisis guardado correctamente
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          )}
+
           {/* Transcript Section */}
           {transcript && (
             <Box>
