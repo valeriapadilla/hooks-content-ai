@@ -1,34 +1,23 @@
 import os
 import subprocess
-from typing import Optional
+import requests
+from app.config import settings
 
 
 class TranscriptionService:
-    """Servicio responsable de transcribir audio/video a texto usando Whisper."""
+    """Servicio responsable de transcribir audio/video a texto usando Deepgram."""
     
-    def __init__(
-        self,
-        whisper_cli_path: Optional[str] = None,
-        model_path: Optional[str] = None,
-        language: Optional[str] = None
-    ):
+    def __init__(self):
         """
-        Inicializa el servicio de transcripción.
+        Inicializa el servicio de transcripción con Deepgram.
+        """
+        if not settings.DEEPGRAM_API_KEY:
+            raise ValueError("DEEPGRAM_API_KEY no está configurado")
         
-        Args:
-            whisper_cli_path: Ruta al ejecutable de whisper-cli (opcional, usa env var)
-            model_path: Ruta al modelo de Whisper (opcional, usa env var)
-            language: Idioma para la transcripción (opcional, usa env var)
-        """
-        self.whisper_cli_path = whisper_cli_path or os.getenv(
-            "WHISPER_CLI_PATH", 
-            "./whisper.cpp/build/bin/whisper-cli"
-        )
-        self.model_path = model_path or os.getenv(
-            "WHISPER_MODEL_PATH",
-            "./whisper.cpp/models/ggml-base.bin"
-        )
-        self.language = language or os.getenv("WHISPER_LANGUAGE", "es")
+        self.api_key = settings.DEEPGRAM_API_KEY
+        self.language = os.getenv("DEEPGRAM_LANGUAGE", "es")
+        self.model = os.getenv("DEEPGRAM_MODEL", "nova-2")
+        self.base_url = "https://api.deepgram.com/v1/listen"
     
     def extract_audio(self, video_path: str) -> str:
         """
@@ -67,7 +56,7 @@ class TranscriptionService:
     
     def transcribe(self, audio_path: str) -> str:
         """
-        Transcribe un archivo de audio a texto usando Whisper.
+        Transcribe un archivo de audio a texto usando Deepgram.
         
         Args:
             audio_path: Ruta del archivo de audio
@@ -79,30 +68,51 @@ class TranscriptionService:
             Exception: Si ocurre un error durante la transcripción
         """
         try:
-            result = subprocess.run(
-                [
-                    self.whisper_cli_path,
-                    "-m", self.model_path,
-                    "-f", audio_path,
-                    "--language", self.language,
-                    "-otxt"
-                ],
-                capture_output=True,
-                text=True,
-                check=True
-            )
+            with open(audio_path, "rb") as audio_file:
+                headers = {
+                    "Authorization": f"Token {self.api_key}",
+                    "Content-Type": "audio/wav",
+                }
+                
+                params = {
+                    "model": self.model,
+                    "language": self.language,
+                    "smart_format": "true",
+                }
+                
+                response = requests.post(
+                    self.base_url,
+                    headers=headers,
+                    params=params,
+                    data=audio_file,
+                    timeout=300
+                )
             
-            transcript = result.stdout.strip()
+            if response.status_code != 200:
+                error_detail = response.text
+                try:
+                    error_json = response.json()
+                    if "err" in error_json:
+                        error_detail = error_json["err"].get("message", str(error_json))
+                    elif "message" in error_json:
+                        error_detail = error_json["message"]
+                except:
+                    pass
+                raise Exception(f"Error en Deepgram API ({response.status_code}): {error_detail}")
+            
+            result = response.json()
+            
+            transcript = result.get("results", {}).get("channels", [{}])[0].get("alternatives", [{}])[0].get("transcript", "")
             
             if not transcript:
                 raise Exception("No se pudo generar transcripción")
             
             return transcript
-            
-        except subprocess.CalledProcessError as e:
-            raise Exception(f"Error en whisper-cli: {e.stderr}")
-        except FileNotFoundError:
-            raise Exception(f"whisper-cli no encontrado en: {self.whisper_cli_path}")
+                
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Error en Deepgram API: {str(e)}")
+        except Exception as e:
+            raise Exception(f"Error en Deepgram: {str(e)}")
     
     def transcribe_video(self, video_path: str) -> str:
         """
