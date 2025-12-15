@@ -85,3 +85,56 @@ export interface VideoAnalysisListResponse {
   total: number
 }
 
+// Hook Generation Types
+export interface HookGenerationRequest {
+  idea: string
+  nicho?: string
+  platform?: string
+}
+
+export interface GeneratedHook {
+  text: string
+  type: string
+  retention_score: number
+  description?: string
+}
+
+export interface HookGenerationResponse {
+  status: string
+  hooks: GeneratedHook[]
+}
+
+export interface ViralHookSaveRequest {
+  user_id: string
+  idea_input: string
+  hook_text: string
+  hook_type?: string
+  retention_score?: number
+  niche?: string
+  metadata?: Record<string, unknown>
+  notes?: string
+}
+
+export interface ViralHookSaveResponse {
+  status: string
+  message: string
+  hook_id?: string
+}
+
+export interface ViralHookListItem {
+  id: string
+  idea_input: string
+  hook_text: string
+  hook_type?: string
+  retention_score?: number
+  niche?: string
+  notes?: string
+  created_at: string
+}
+
+export interface ViralHookListResponse {
+  status: string
+  data: ViralHookListItem[]
+  total: number
+}
+

@@ -11,6 +11,11 @@ import type {
   VideoAnalysisSaveRequest,
   VideoAnalysisSaveResponse,
   VideoAnalysisListResponse,
+  HookGenerationRequest,
+  HookGenerationResponse,
+  ViralHookSaveRequest,
+  ViralHookSaveResponse,
+  ViralHookListResponse,
 } from '../types/api'
 
 class VideoService {
@@ -49,6 +54,43 @@ class VideoService {
   ): Promise<VideoAnalysisListResponse> {
     return apiClient.get<VideoAnalysisListResponse>(
       `${API_ENDPOINTS.VIDEO.GET_ANALYSES}?user_id=${userId}&limit=${limit}&offset=${offset}`,
+      { requireAuth: true }
+    )
+  }
+
+  /**
+   * Genera hooks virales basados en una idea.
+   */
+  async generateHooks(data: HookGenerationRequest): Promise<HookGenerationResponse> {
+    return apiClient.post<HookGenerationResponse>(
+      API_ENDPOINTS.HOOKS.GENERATE,
+      data
+    )
+  }
+
+  /**
+   * Guarda un hook viral en la base de datos.
+   * Requiere autenticación.
+   */
+  async saveViralHook(data: ViralHookSaveRequest): Promise<ViralHookSaveResponse> {
+    return apiClient.post<ViralHookSaveResponse>(
+      API_ENDPOINTS.HOOKS.SAVE,
+      data,
+      { requireAuth: true }
+    )
+  }
+
+  /**
+   * Obtiene los hooks virales guardados por un usuario.
+   * Requiere autenticación.
+   */
+  async getViralHooks(
+    userId: string,
+    limit: number = 50,
+    offset: number = 0
+  ): Promise<ViralHookListResponse> {
+    return apiClient.get<ViralHookListResponse>(
+      `${API_ENDPOINTS.HOOKS.LIST}?user_id=${userId}&limit=${limit}&offset=${offset}`,
       { requireAuth: true }
     )
   }
