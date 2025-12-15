@@ -1,6 +1,4 @@
 import { Box, Typography, List, Divider } from '@mui/material'
-import LogoutIcon from '@mui/icons-material/Logout'
-import HistoryIcon from '@mui/icons-material/History'
 import SidebarLink from './SidebarLink'
 import { DASHBOARD_NAV_ITEMS } from '../../constants/dashboard'
 
