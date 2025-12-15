@@ -23,7 +23,7 @@ class VideoAnalysisSaveRequest(BaseModel):
     user_id: str = Field(..., description="UUID del usuario")
     video_url: str = Field(..., description="URL del video analizado")
     transcript: Optional[str] = Field(None, description="Transcripción del video")
-    hook: Optional[Dict[str, Any]] = Field(None, description="Hook identificado")
+    hook: Optional[str] = Field(None, description="Hook identificado")
     script_base: Optional[str] = Field(None, description="Script base")
     video_title: Optional[str] = Field(None, description="Título del video")
     video_duration: Optional[int] = Field(None, description="Duración en segundos")
@@ -44,11 +44,11 @@ class VideoAnalysisListItem(BaseModel):
     video_url: str = Field(..., description="URL del video")
     video_title: Optional[str] = Field(None, description="Título del video")
     transcript: Optional[str] = Field(None, description="Transcripción")
-    hook: Optional[Dict[str, Any]] = Field(None, description="Hook identificado")
+    hook: Optional[str] = Field(None, description="Hook identificado")
     script_base: Optional[str] = Field(None, description="Script base")
     platform: Optional[str] = Field(None, description="Plataforma")
-    created_at: Optional[str] = Field(None, description="Fecha de creación")
-    updated_at: Optional[str] = Field(None, description="Fecha de actualización")
+    created_at: str = Field(None, description="Fecha de creación")
+    updated_at: str = Field(None, description="Fecha de actualización")
 
 
 class VideoAnalysisListResponse(BaseModel):
