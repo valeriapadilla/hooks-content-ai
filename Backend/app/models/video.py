@@ -62,6 +62,7 @@ class HookGenerationRequest(BaseModel):
     """Request model for generating hooks."""
     idea: str = Field(..., description="Idea o guion base para generar hooks")
     nicho: Optional[str] = Field(None, description="Nicho o categoría del contenido")
+    platform: Optional[str] = Field(None, description="Plataforma: tiktok, instagram, twitter, linkedin, facebook")
 
 
 class GeneratedHook(BaseModel):
@@ -76,3 +77,45 @@ class HookGenerationResponse(BaseModel):
     """Response model for hook generation."""
     status: str = Field(..., description="Estado de la respuesta")
     hooks: List[GeneratedHook] = Field(..., description="Lista de hooks generados")
+
+
+# ============================================
+# VIRAL HOOKS - Guardar y listar hooks generados
+# ============================================
+
+class ViralHookSaveRequest(BaseModel):
+    """Request model for saving a viral hook."""
+    user_id: str = Field(..., description="UUID del usuario")
+    idea_input: str = Field(..., description="Idea o guion base original")
+    hook_text: str = Field(..., description="Texto del hook generado")
+    hook_type: Optional[str] = Field(None, description="Tipo de hook (emocional, racional, etc)")
+    retention_score: Optional[float] = Field(None, description="Score de retención (0-100)")
+    niche: Optional[str] = Field(None, description="Nicho del contenido")
+    metadata: Optional[Dict[str, Any]] = Field(None, description="Metadata adicional")
+    notes: Optional[str] = Field(None, description="Notas del usuario")
+
+
+class ViralHookSaveResponse(BaseModel):
+    """Response model for saving a viral hook."""
+    status: str = Field(..., description="Estado de la respuesta")
+    message: str = Field(..., description="Mensaje de confirmación")
+    hook_id: Optional[str] = Field(None, description="ID del hook guardado")
+
+
+class ViralHookListItem(BaseModel):
+    """Model for a single viral hook item in list."""
+    id: str = Field(..., description="ID del hook")
+    idea_input: str = Field(..., description="Idea original")
+    hook_text: str = Field(..., description="Texto del hook")
+    hook_type: Optional[str] = Field(None, description="Tipo de hook")
+    retention_score: Optional[float] = Field(None, description="Score de retención")
+    niche: Optional[str] = Field(None, description="Nicho")
+    notes: Optional[str] = Field(None, description="Notas")
+    created_at: Optional[str] = Field(None, description="Fecha de creación")
+
+
+class ViralHookListResponse(BaseModel):
+    """Response model for list of viral hooks."""
+    status: str = Field(..., description="Estado de la respuesta")
+    data: List[ViralHookListItem] = Field(..., description="Lista de hooks")
+    total: int = Field(..., description="Total de hooks")

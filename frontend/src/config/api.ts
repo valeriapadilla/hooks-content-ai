@@ -20,5 +20,11 @@ export const API_ENDPOINTS = {
     SAVE: '/video/save',
     GET_ANALYSES: '/video/analyses',
   },
+  // Hooks
+  HOOKS: {
+    GENERATE: '/video/generate-hooks',
+    SAVE: '/video/save-hook',
+    LIST: '/video/hooks',
+  },
 } as const
 

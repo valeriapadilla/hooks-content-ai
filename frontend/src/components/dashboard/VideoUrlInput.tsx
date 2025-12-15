@@ -55,82 +55,60 @@ const VideoUrlInput = ({ onSearch, isLoading = false }: VideoUrlInputProps) => {
     <Box
       component="form"
       onSubmit={handleSubmit}
-      sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+      sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-        <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-          <TextField
-            id="video-url"
-            type="url"
-            value={url}
-            onChange={handleChange}
-            placeholder="https://www.youtube.com/watch?v=..."
-            disabled={isLoading}
-            error={!!error}
-            fullWidth
-            variant="outlined"
-            label="URL del Video"
-            sx={{
-              flex: 1,
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 2,
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                '& fieldset': {
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
-                },
-                '&:hover fieldset': {
-                  borderColor: 'rgba(255, 206, 69, 0.5)',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: 'secondary.main',
-                  boxShadow: '0 0 0 3px rgba(255, 206, 69, 0.15)',
-                },
-              },
-              '& .MuiInputBase-input': {
-                color: 'text.primary',
-              },
-              '& .MuiInputLabel-root': {
-                color: 'text.secondary',
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: 'secondary.main',
-              },
-            }}
-          />
-          <Button
-            type="submit"
-            disabled={isLoading || !url.trim()}
-            variant="contained"
-            color="secondary"
-            size="large"
-            startIcon={
-              isLoading ? (
-                <CircularProgress size={18} sx={{ color: '#0A0A0A' }} />
-              ) : (
-                <SearchIcon />
-              )
-            }
-            sx={{
-              px: 4,
-              py: 1.75,
+      <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+        <TextField
+          id="video-url"
+          type="url"
+          value={url}
+          onChange={handleChange}
+          placeholder="https://www.youtube.com/watch?v=..."
+          disabled={isLoading}
+          error={!!error}
+          fullWidth
+          variant="outlined"
+          label="URL del Video"
+          sx={{
+            flex: 1,
+            '& .MuiOutlinedInput-root': {
               borderRadius: 2,
-              whiteSpace: 'nowrap',
-              minWidth: { xs: '100%', sm: 140 },
-              color: '#0A0A0A',
-              fontWeight: 600,
-            }}
-          >
-            {isLoading ? 'Analizando...' : 'Buscar'}
-          </Button>
-        </Box>
-        {error && (
-          <Fade in={!!error}>
-            <FormHelperText error sx={{ fontSize: '0.8125rem', mx: 1.5 }}>
-              {error}
-            </FormHelperText>
-          </Fade>
-        )}
+              bgcolor: 'rgba(255, 255, 255, 0.02)',
+              '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
+              '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
+              '&.Mui-focused fieldset': { borderColor: '#FFCE45' },
+            },
+            '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.5)' },
+            '& .MuiInputLabel-root.Mui-focused': { color: '#FFCE45' },
+          }}
+        />
+        <Button
+          type="submit"
+          disabled={isLoading || !url.trim()}
+          variant="contained"
+          startIcon={isLoading ? <CircularProgress size={16} sx={{ color: 'inherit' }} /> : <SearchIcon />}
+          sx={{
+            px: 3,
+            py: 1.5,
+            borderRadius: 2,
+            minWidth: { xs: '100%', sm: 130 },
+            bgcolor: '#FFCE45',
+            color: '#000',
+            fontWeight: 600,
+            '&:hover': { bgcolor: '#e6b93d' },
+            '&:disabled': { bgcolor: 'rgba(255, 206, 69, 0.3)', color: 'rgba(0,0,0,0.5)' },
+          }}
+        >
+          {isLoading ? 'Analizando...' : 'Analizar'}
+        </Button>
       </Box>
+      {error && (
+        <Fade in={!!error}>
+          <FormHelperText error sx={{ fontSize: '0.8rem', ml: 0.5 }}>
+            {error}
+          </FormHelperText>
+        </Fade>
+      )}
     </Box>
   )
 }

@@ -9,6 +9,10 @@ from app.models.video import (
     HookGenerationRequest,
     HookGenerationResponse,
     GeneratedHook,
+    ViralHookSaveRequest,
+    ViralHookSaveResponse,
+    ViralHookListItem,
+    ViralHookListResponse,
 )
 from app.services.video_downloader import VideoDownloader
 from app.services.transcription_service import TranscriptionService
@@ -222,9 +226,10 @@ def generate_hooks(data: HookGenerationRequest):
     (emocional, racional, sorpresa, controversial, curiosidad) con scores de retención.
     
     Args:
-        data: Request con la idea y opcionalmente el nicho
+        data: Request con la idea y opcionalmente el nicho y plataforma
             - idea: Descripción de la idea o guion base
             - nicho: Nicho o categoría del contenido (opcional)
+            - platform: Plataforma destino (tiktok, instagram, twitter, linkedin, facebook)
             
     Returns:
         HookGenerationResponse con lista de hooks generados y ordenados por score
@@ -242,7 +247,8 @@ def generate_hooks(data: HookGenerationRequest):
         # Generar hooks con ChatGPT (responsabilidad: VideoAnalysisService)
         hooks_data = video_analysis_service.generate_hooks(
             idea=data.idea,
-            nicho=data.nicho
+            nicho=data.nicho,
+            platform=data.platform
         )
         
         # Convertir a modelos Pydantic
@@ -269,4 +275,109 @@ def generate_hooks(data: HookGenerationRequest):
         raise HTTPException(
             status_code=500,
             detail=f"Error al generar hooks: {str(e)}"
+        )
+
+
+@router.post("/save-hook", response_model=ViralHookSaveResponse)
+def save_viral_hook(data: ViralHookSaveRequest):
+    """
+    Guarda un hook viral en Supabase.
+    
+    Args:
+        data: Request con los datos del hook a guardar
+            
+    Returns:
+        ViralHookSaveResponse con el ID del hook guardado
+        
+    Raises:
+        HTTPException: Si hay error al guardar
+    """
+    try:
+        if not data.user_id:
+            raise HTTPException(status_code=400, detail="user_id es requerido")
+        if not data.idea_input:
+            raise HTTPException(status_code=400, detail="idea_input es requerido")
+        if not data.hook_text:
+            raise HTTPException(status_code=400, detail="hook_text es requerido")
+        
+        saved_hook = supabase_service.save_viral_hook(
+            user_id=data.user_id,
+            idea_input=data.idea_input,
+            hook_text=data.hook_text,
+            hook_type=data.hook_type,
+            retention_score=data.retention_score,
+            niche=data.niche,
+            metadata=data.metadata,
+            notes=data.notes
+        )
+        
+        return ViralHookSaveResponse(
+            status="success",
+            message="Hook guardado correctamente",
+            hook_id=saved_hook.get("id")
+        )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al guardar el hook: {str(e)}"
+        )
+
+
+@router.get("/hooks", response_model=ViralHookListResponse)
+def get_viral_hooks(
+    user_id: str = Query(..., description="ID del usuario"),
+    limit: int = Query(50, ge=1, le=100, description="Número máximo de resultados"),
+    offset: int = Query(0, ge=0, description="Número de resultados a saltar")
+):
+    """
+    Obtiene los hooks virales guardados por un usuario.
+    """
+    try:
+        if not user_id:
+            raise HTTPException(status_code=400, detail="user_id es requerido")
+        
+        hooks = supabase_service.get_viral_hooks(
+            user_id=user_id.strip(),
+            limit=limit,
+            offset=offset
+        )
+        
+        def format_datetime(dt_value):
+            if not dt_value:
+                return ""
+            if isinstance(dt_value, str):
+                return dt_value
+            if hasattr(dt_value, 'isoformat'):
+                return dt_value.isoformat()
+            return str(dt_value)
+        
+        hooks_list = [
+            ViralHookListItem(
+                id=str(hook.get("id")),
+                idea_input=hook.get("idea_input", ""),
+                hook_text=hook.get("hook_text", ""),
+                hook_type=hook.get("hook_type"),
+                retention_score=hook.get("retention_score"),
+                niche=hook.get("niche"),
+                notes=hook.get("notes"),
+                created_at=format_datetime(hook.get("created_at"))
+            )
+            for hook in hooks
+        ]
+        
+        return ViralHookListResponse(
+            status="success",
+            data=hooks_list,
+            total=len(hooks_list)
+        )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al obtener hooks: {str(e)}"
         )

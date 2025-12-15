@@ -14,7 +14,9 @@ import { ApiClientError } from '../../services/apiClient'
 import { getUserId } from '../../utils/authStorage'
 import VideoAnalysisCard from './VideoAnalysisCard'
 import VideoAnalysisModal from './VideoAnalysisModal'
-import type { VideoAnalysisListItem } from '../../types/api'
+import ViralHookCard from './ViralHookCard'
+import ViralHookModal from './ViralHookModal'
+import type { VideoAnalysisListItem, ViralHookListItem } from '../../types/api'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -33,10 +35,13 @@ const TabPanel = ({ children, value, index }: TabPanelProps) => {
 const MyAnalysesView = () => {
   const [activeTab, setActiveTab] = useState(0)
   const [videoAnalyses, setVideoAnalyses] = useState<VideoAnalysisListItem[]>([])
+  const [viralHooks, setViralHooks] = useState<ViralHookListItem[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [selectedAnalysis, setSelectedAnalysis] = useState<VideoAnalysisListItem | null>(null)
+  const [selectedHook, setSelectedHook] = useState<ViralHookListItem | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [hookModalOpen, setHookModalOpen] = useState(false)
 
   const loadVideoAnalyses = async () => {
     const userId = getUserId()
@@ -67,9 +72,40 @@ const MyAnalysesView = () => {
     }
   }
 
+  const loadViralHooks = async () => {
+    const userId = getUserId()
+    if (!userId) {
+      setError('Debes iniciar sesión para ver tus hooks')
+      return
+    }
+
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const response = await videoService.getViralHooks(userId)
+      setViralHooks(response.data)
+    } catch (err) {
+      let errorMessage = 'Error al cargar los hooks'
+      
+      if (err instanceof ApiClientError) {
+        errorMessage = err.detail
+      } else if (err instanceof Error) {
+        errorMessage = err.message
+      }
+      
+      setError(errorMessage)
+      console.error('Error al cargar hooks:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   useEffect(() => {
     if (activeTab === 0) {
       loadVideoAnalyses()
+    } else if (activeTab === 1) {
+      loadViralHooks()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab])
@@ -88,39 +124,63 @@ const MyAnalysesView = () => {
     setSelectedAnalysis(null)
   }
 
+  const handleHookClick = (hook: ViralHookListItem) => {
+    setSelectedHook(hook)
+    setHookModalOpen(true)
+  }
+
+  const handleCloseHookModal = () => {
+    setHookModalOpen(false)
+    setSelectedHook(null)
+  }
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      <Box>
-        <Typography
-          variant="h4"
+      {/* Header */}
+      <Box
+        sx={{
+          mb: 1,
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          justifyContent: 'space-between',
+          gap: 1.5,
+        }}
+      >
+        <Box>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 800, mb: 0.25, color: 'white', letterSpacing: '-0.01em' }}
+          >
+            Mis Análisis
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.95rem' }}>
+            Historial de videos y hooks guardados para tu cuenta.
+          </Typography>
+        </Box>
+        <Box
           sx={{
-            fontWeight: 700,
-            mb: 1,
-            color: 'text.primary',
+            alignSelf: { xs: 'flex-start', sm: 'center' },
+            px: 1.5,
+            py: 0.75,
+            borderRadius: 999,
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            bgcolor: 'rgba(255, 255, 255, 0.03)',
+            color: 'rgba(255,255,255,0.75)',
+            fontWeight: 600,
+            fontSize: '0.85rem',
           }}
         >
-          Mis Análisis
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            color: 'text.secondary',
-            fontSize: '0.9375rem',
-          }}
-        >
-          Revisa tu historial de videos analizados y hooks generados
-        </Typography>
+          Datos en tiempo real
+        </Box>
       </Box>
 
       <Paper
         elevation={0}
         sx={{
-          borderRadius: 4,
-          background: 'linear-gradient(145deg, rgba(15, 15, 15, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid',
-          borderColor: 'rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+          borderRadius: 3,
+          bgcolor: 'rgba(17,17,19,0.94)',
+          border: '1px solid rgba(255, 255, 255, 0.07)',
+          boxShadow: '0 18px 45px rgba(0,0,0,0.35)',
           overflow: 'hidden',
         }}
       >
@@ -128,94 +188,55 @@ const MyAnalysesView = () => {
           value={activeTab}
           onChange={handleTabChange}
           sx={{
-            borderBottom: '1px solid',
-            borderColor: 'rgba(255, 255, 255, 0.08)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            px: { xs: 0.5, sm: 1 },
             '& .MuiTab-root': {
-              color: 'text.secondary',
+              color: 'rgba(255,255,255,0.6)',
               textTransform: 'none',
-              fontWeight: 600,
-              fontSize: '0.9375rem',
-              minHeight: 64,
-              '&.Mui-selected': {
-                color: 'primary.main',
-              },
+              fontWeight: 500,
+              fontSize: '0.92rem',
+              minHeight: 54,
+              letterSpacing: '0.01em',
+              '&.Mui-selected': { color: '#FFCE45', fontWeight: 700 },
             },
             '& .MuiTabs-indicator': {
-              backgroundColor: 'primary.main',
+              background: 'linear-gradient(90deg, rgba(255,206,69,1) 0%, rgba(255,206,69,0.65) 100%)',
+              height: 3,
+              borderRadius: 2,
             },
           }}
         >
-          <Tab
-            icon={<VideoLibraryIcon sx={{ fontSize: 20 }} />}
-            iconPosition="start"
-            label="Videos Analizados"
-          />
-          <Tab
-            icon={<BoltIcon sx={{ fontSize: 20 }} />}
-            iconPosition="start"
-            label="Hooks Generados"
-          />
+          <Tab icon={<VideoLibraryIcon sx={{ fontSize: 18 }} />} iconPosition="start" label="Videos" />
+          <Tab icon={<BoltIcon sx={{ fontSize: 18 }} />} iconPosition="start" label="Hooks" />
         </Tabs>
 
-        <Box sx={{ p: { xs: 3, md: 4 } }}>
+        <Box sx={{ p: 3 }}>
           <TabPanel value={activeTab} index={0}>
             {isLoading ? (
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  py: 8,
-                }}
-              >
-                <CircularProgress size={40} />
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+                <CircularProgress size={32} sx={{ color: '#FFCE45' }} />
               </Box>
             ) : error ? (
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 3,
-                  borderRadius: 2,
-                  bgcolor: 'rgba(255, 0, 0, 0.1)',
-                  border: '1px solid rgba(255, 0, 0, 0.25)',
-                  textAlign: 'center',
-                }}
-              >
-                <Typography variant="body2" sx={{ color: 'error.main' }}>
-                  {error}
-                </Typography>
-              </Paper>
-            ) : videoAnalyses.length === 0 ? (
               <Box
                 sx={{
+                  p: 2,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(244, 67, 54, 0.1)',
+                  border: '1px solid rgba(244, 67, 54, 0.3)',
                   textAlign: 'center',
-                  py: 8,
                 }}
               >
-                <VideoLibraryIcon
-                  sx={{
-                    fontSize: 64,
-                    color: 'text.secondary',
-                    opacity: 0.5,
-                    mb: 2,
-                  }}
-                />
-                <Typography
-                  variant="body1"
-                  sx={{
-                    color: 'text.secondary',
-                    mb: 1,
-                  }}
-                >
-                  No tienes videos analizados aún
+                <Typography variant="body2" sx={{ color: '#f44336', fontSize: '0.875rem' }}>
+                  {error}
                 </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: 'text.secondary',
-                    opacity: 0.7,
-                  }}
-                >
+              </Box>
+            ) : videoAnalyses.length === 0 ? (
+              <Box sx={{ textAlign: 'center', py: 6 }}>
+                <VideoLibraryIcon sx={{ fontSize: 48, color: 'rgba(255,255,255,0.2)', mb: 2 }} />
+                <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', mb: 0.5 }}>
+                  No tienes videos analizados
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.3)' }}>
                   Analiza y guarda videos para verlos aquí
                 </Typography>
               </Box>
@@ -223,11 +244,8 @@ const MyAnalysesView = () => {
               <Box
                 sx={{
                   display: 'grid',
-                  gridTemplateColumns: {
-                    xs: '1fr',
-                    sm: 'repeat(2, 1fr)',
-                  },
-                  gap: 3,
+                  gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+                  gap: 2,
                 }}
               >
                 {videoAnalyses.map((analysis) => (
@@ -242,39 +260,51 @@ const MyAnalysesView = () => {
           </TabPanel>
 
           <TabPanel value={activeTab} index={1}>
-            <Box
-              sx={{
-                textAlign: 'center',
-                py: 8,
-              }}
-            >
-              <BoltIcon
+            {isLoading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+                <CircularProgress size={32} sx={{ color: '#FFCE45' }} />
+              </Box>
+            ) : error ? (
+              <Box
                 sx={{
-                  fontSize: 64,
-                  color: 'text.secondary',
-                  opacity: 0.5,
-                  mb: 2,
-                }}
-              />
-              <Typography
-                variant="body1"
-                sx={{
-                  color: 'text.secondary',
-                  mb: 1,
+                  p: 2,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(244, 67, 54, 0.1)',
+                  border: '1px solid rgba(244, 67, 54, 0.3)',
+                  textAlign: 'center',
                 }}
               >
-                No tienes hooks generados aún
-              </Typography>
-              <Typography
-                variant="body2"
+                <Typography variant="body2" sx={{ color: '#f44336', fontSize: '0.875rem' }}>
+                  {error}
+                </Typography>
+              </Box>
+            ) : viralHooks.length === 0 ? (
+              <Box sx={{ textAlign: 'center', py: 6 }}>
+                <BoltIcon sx={{ fontSize: 48, color: 'rgba(255,255,255,0.2)', mb: 2 }} />
+                <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', mb: 0.5 }}>
+                  No tienes hooks guardados
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.3)' }}>
+                  Genera y guarda hooks para verlos aquí
+                </Typography>
+              </Box>
+            ) : (
+              <Box
                 sx={{
-                  color: 'text.secondary',
-                  opacity: 0.7,
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+                  gap: 2,
                 }}
               >
-                Genera hooks para verlos aquí
-              </Typography>
-            </Box>
+                {viralHooks.map((hook) => (
+                  <ViralHookCard 
+                    key={hook.id} 
+                    hook={hook}
+                    onClick={() => handleHookClick(hook)}
+                  />
+                ))}
+              </Box>
+            )}
           </TabPanel>
         </Box>
       </Paper>
@@ -283,6 +313,12 @@ const MyAnalysesView = () => {
         open={modalOpen}
         onClose={handleCloseModal}
         analysis={selectedAnalysis}
+      />
+      
+      <ViralHookModal
+        open={hookModalOpen}
+        onClose={handleCloseHookModal}
+        hook={selectedHook}
       />
     </Box>
   )

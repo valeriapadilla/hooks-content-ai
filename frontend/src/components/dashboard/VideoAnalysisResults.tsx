@@ -58,24 +58,26 @@ const VideoAnalysisResults = ({
             p: 6,
             textAlign: 'center',
             borderRadius: 4,
-            background: 'linear-gradient(145deg, rgba(15, 15, 15, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%)',
+            background:
+              'linear-gradient(150deg, rgba(17,17,21,0.95) 0%, rgba(12,12,16,0.92) 60%, rgba(17,17,21,0.95) 100%), radial-gradient(120% 120% at 20% 0%, rgba(255,206,69,0.08), transparent 45%), radial-gradient(120% 120% at 80% 0%, rgba(103,80,164,0.07), transparent 45%)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid',
-            borderColor: 'rgba(255, 255, 255, 0.08)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            boxShadow: '0 22px 55px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,206,69,0.04)',
           }}
         >
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
             <Box
               sx={{
-                width: 80,
-                height: 80,
-                borderRadius: '50%',
-                bgcolor: 'rgba(255, 255, 255, 0.05)',
+                width: 86,
+                height: 86,
+                borderRadius: '28%',
+                bgcolor: 'rgba(255, 206, 69, 0.12)',
+                border: '1px solid rgba(255, 206, 69, 0.25)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '2.5rem',
+                fontSize: '2.4rem',
+                boxShadow: '0 12px 30px rgba(0,0,0,0.35)',
               }}
             >
               📹
@@ -96,11 +98,11 @@ const VideoAnalysisResults = ({
         sx={{
           p: { xs: 3, md: 4 },
           borderRadius: 4,
-          background: 'linear-gradient(145deg, rgba(15, 15, 15, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%)',
+          background:
+            'linear-gradient(150deg, rgba(17,17,21,0.95) 0%, rgba(12,12,16,0.92) 60%, rgba(17,17,21,0.95) 100%), radial-gradient(120% 120% at 15% 0%, rgba(255,206,69,0.08), transparent 45%), radial-gradient(120% 120% at 85% 0%, rgba(33,150,243,0.06), transparent 45%)',
           backdropFilter: 'blur(20px)',
-          border: '1px solid',
-          borderColor: 'rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 22px 55px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,206,69,0.04)',
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

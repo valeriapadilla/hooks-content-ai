@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Box, Paper, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
+import OndemandVideoIcon from '@mui/icons-material/OndemandVideo'
 
 import { videoService } from '../../services/videoService'
 import { ApiClientError } from '../../services/apiClient'
@@ -45,13 +46,13 @@ const AnalyzeVideoView = () => {
       })
     } catch (err) {
       let errorMessage = 'Error al analizar el video'
-      
+
       if (err instanceof ApiClientError) {
         errorMessage = err.detail
       } else if (err instanceof Error) {
         errorMessage = err.message
       }
-      
+
       setError(errorMessage)
       console.error('Error al analizar video:', err)
     } finally {
@@ -81,18 +82,18 @@ const AnalyzeVideoView = () => {
         script_base: analysisData.scriptBase,
         video_title: title || undefined,
       })
-      
+
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 3000)
     } catch (err) {
       let errorMessage = 'Error al guardar el análisis'
-      
+
       if (err instanceof ApiClientError) {
         errorMessage = err.detail
       } else if (err instanceof Error) {
         errorMessage = err.message
       }
-      
+
       setError(errorMessage)
       console.error('Error al guardar:', err)
     } finally {
@@ -101,63 +102,108 @@ const AnalyzeVideoView = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       {/* Header */}
-      <Box>
-        <Typography
-          variant="h4"
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          alignItems: { xs: 'flex-start', md: 'center' },
+          justifyContent: 'space-between',
+          gap: 2,
+        }}
+      >
+        <Box>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 800,
+              mb: 0.5,
+              background: 'linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            Analizar Video
+          </Typography>
+          <Typography sx={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.95rem' }}>
+            Extrae hooks virales y scripts replicables de cualquier video
+          </Typography>
+        </Box>
+
+        <Box
           sx={{
-            fontWeight: 700,
-            mb: 1,
-            color: 'text.primary',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            px: 2,
+            py: 1,
+            borderRadius: 3,
+            background: 'linear-gradient(135deg, rgba(96,165,250,0.15) 0%, rgba(96,165,250,0.05) 100%)',
+            border: '1px solid rgba(96,165,250,0.3)',
+            backdropFilter: 'blur(10px)',
           }}
         >
-          Analizar Video
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            color: 'text.secondary',
-            fontSize: '0.9375rem',
-          }}
-        >
-          Ingresa la URL de un video viral para analizar su estructura, hook y obtener un script base replicable
-        </Typography>
+          <OndemandVideoIcon sx={{ fontSize: 18, color: '#60A5FA' }} />
+          <Typography sx={{ color: '#60A5FA', fontWeight: 600, fontSize: '0.85rem' }}>
+            IA Analítica
+          </Typography>
+        </Box>
       </Box>
 
       {/* Input Section */}
-      <Paper
-        elevation={0}
+      <Box
         sx={{
-          p: { xs: 3, md: 4 },
+          p: 3,
           borderRadius: 4,
-          background: 'linear-gradient(145deg, rgba(15, 15, 15, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%)',
+          position: 'relative',
+          background: 'linear-gradient(145deg, rgba(22,22,26,0.9) 0%, rgba(16,16,20,0.95) 100%)',
+          border: '1px solid rgba(255,255,255,0.08)',
           backdropFilter: 'blur(20px)',
-          border: '1px solid',
-          borderColor: 'rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '1px',
+            background: 'linear-gradient(90deg, transparent, rgba(96,165,250,0.5), transparent)',
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '200px',
+            height: '200px',
+            background: 'radial-gradient(circle, rgba(96,165,250,0.1) 0%, transparent 70%)',
+            pointerEvents: 'none',
+          },
         }}
       >
-        <VideoUrlInput onSearch={handleSearch} isLoading={isLoading} />
-        {error && (
-          <Box sx={{ mt: 2 }}>
-            <Paper
-              elevation={0}
+        <Box sx={{ position: 'relative', zIndex: 1 }}>
+          <VideoUrlInput onSearch={handleSearch} isLoading={isLoading} />
+
+          {error && (
+            <Box
               sx={{
+                mt: 2.5,
                 p: 2,
                 borderRadius: 2,
-                bgcolor: 'error.dark',
-                border: '1px solid',
-                borderColor: 'error.main',
+                background: 'linear-gradient(135deg, rgba(244,67,54,0.15) 0%, rgba(244,67,54,0.05) 100%)',
+                border: '1px solid rgba(244,67,54,0.3)',
               }}
             >
-              <Typography variant="body2" sx={{ color: 'error.light' }}>
+              <Typography sx={{ color: '#f44336', fontSize: '0.9rem', fontWeight: 500 }}>
                 {error}
               </Typography>
-            </Paper>
-          </Box>
-        )}
-      </Paper>
+            </Box>
+          )}
+        </Box>
+      </Box>
 
       {/* Results Section */}
       <VideoAnalysisResults
@@ -173,4 +219,3 @@ const AnalyzeVideoView = () => {
 }
 
 export default AnalyzeVideoView
-

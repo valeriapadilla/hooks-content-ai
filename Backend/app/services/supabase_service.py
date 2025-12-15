@@ -110,4 +110,93 @@ class SupabaseService:
             return result.data if result.data else []
         except Exception as e:
             raise Exception(f"Error al obtener análisis de video: {str(e)}")
+    
+    # ============================================
+    # VIRAL HOOKS - Feature 2
+    # ============================================
+    
+    def save_viral_hook(
+        self,
+        user_id: str,
+        idea_input: str,
+        hook_text: str,
+        hook_type: Optional[str] = None,
+        retention_score: Optional[float] = None,
+        niche: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        notes: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Guarda un hook viral en Supabase.
+        
+        Args:
+            user_id: ID del usuario
+            idea_input: Idea o guion base original
+            hook_text: Texto del hook generado
+            hook_type: Tipo de hook (emocional, racional, etc.)
+            retention_score: Score de retención (0-100)
+            niche: Nicho del contenido
+            metadata: Metadatos adicionales
+            notes: Notas del usuario
+            
+        Returns:
+            Diccionario con el hook guardado
+        """
+        data = {
+            "user_id": user_id,
+            "idea_input": idea_input,
+            "hook_text": hook_text,
+        }
+        
+        if hook_type:
+            data["hook_type"] = hook_type
+        if retention_score is not None:
+            data["retention_score"] = retention_score
+        if niche:
+            data["niche"] = niche
+        if metadata:
+            data["metadata"] = metadata
+        if notes:
+            data["notes"] = notes
+        
+        result = self.client.table("viral_hooks").insert(data).execute()
+        
+        if not result.data:
+            raise Exception("No se pudo guardar el hook")
+        
+        return result.data[0]
+    
+    def get_viral_hooks(
+        self,
+        user_id: str,
+        limit: Optional[int] = 50,
+        offset: Optional[int] = 0
+    ) -> List[Dict[str, Any]]:
+        """
+        Obtiene los hooks virales de un usuario.
+        
+        Args:
+            user_id: ID del usuario
+            limit: Número máximo de resultados (default: 50)
+            offset: Número de resultados a saltar (default: 0)
+            
+        Returns:
+            Lista de hooks virales del usuario
+        """
+        try:
+            user_id = user_id.strip()
+            
+            result = (
+                self.client.table("viral_hooks")
+                .select("*")
+                .eq("user_id", user_id)
+                .order("created_at", desc=True)
+                .limit(limit or 50)
+                .offset(offset or 0)
+                .execute()
+            )
+            
+            return result.data if result.data else []
+        except Exception as e:
+            raise Exception(f"Error al obtener hooks virales: {str(e)}")
 

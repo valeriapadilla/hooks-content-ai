@@ -45,17 +45,31 @@ const VideoAnalysisCard = ({ analysis, onClick }: VideoAnalysisCardProps) => {
       elevation={0}
       onClick={onClick}
       sx={{
-        p: 3,
+        p: 2.5,
         borderRadius: 3,
-        background: 'rgba(255, 255, 255, 0.03)',
-        border: '1px solid',
-        borderColor: 'rgba(255, 255, 255, 0.08)',
-        transition: 'all 0.2s ease-in-out',
+        background:
+          'linear-gradient(145deg, rgba(18,18,22,0.95) 0%, rgba(12,12,16,0.92) 60%, rgba(18,18,22,0.95) 100%), radial-gradient(120% 120% at 20% 0%, rgba(255,206,69,0.08), transparent 45%), radial-gradient(120% 120% at 80% 0%, rgba(33,150,243,0.06), transparent 45%)',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        boxShadow: '0 22px 55px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,206,69,0.04)',
+        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
         cursor: onClick ? 'pointer' : 'default',
+        position: 'relative',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(120deg, rgba(255,206,69,0.08), rgba(33,150,243,0.05))',
+          opacity: 0,
+          transition: 'opacity 0.25s',
+        },
         '&:hover': {
-          borderColor: 'rgba(255, 206, 69, 0.3)',
-          transform: 'translateY(-2px)',
-          boxShadow: '0 4px 20px rgba(255, 206, 69, 0.1)',
+          borderColor: 'rgba(255, 206, 69, 0.45)',
+          transform: 'translateY(-4px)',
+          boxShadow: '0 26px 65px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,206,69,0.08)',
+          '&::before': {
+            opacity: 1,
+          },
         },
         display: 'flex',
         flexDirection: 'column',
@@ -74,13 +88,14 @@ const VideoAnalysisCard = ({ analysis, onClick }: VideoAnalysisCardProps) => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1 }}>
           <Box
             sx={{
-              width: 40,
-              height: 40,
-              borderRadius: 2,
-              bgcolor: 'rgba(255, 206, 69, 0.1)',
+              width: 42,
+              height: 42,
+              borderRadius: 2.5,
+              background: 'linear-gradient(135deg, rgba(255,206,69,0.22), rgba(33,150,243,0.18))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              boxShadow: '0 10px 24px rgba(0,0,0,0.35)',
             }}
           >
             <VideoLibraryIcon sx={{ fontSize: 20, color: 'primary.main' }} />
